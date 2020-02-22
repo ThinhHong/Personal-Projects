@@ -1,0 +1,107 @@
+---
+title: "SDS 3386"
+subtitle: "Assignment 3"
+author: "Thinh Hong"
+date: "`r Sys.time()`"
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_float: true
+---
+
+
+```{r, warning=FALSE, message=FALSE}
+# load libraries
+library(dplyr)
+library(readxl)
+library(janitor)
+library(ggplot2)
+library(skimr)
+library(stringr)
+library(plyr)
+library(tidyverse)
+```
+# Description
+ By studying the data in the statementofvotescastoctober242018.xls,it is being deterrmined  by what fraction of precints did the winner beat the 2nd place person in all the wards. The amount of precints the winner beat the runner up against the total amount of precints in each ward will be ploted. There are 23 wards.
+
+# Headline
+
+The following plot is  the comparision between the first place winner and the second place winner. It shows the differnece in votes for every presinct.
+
+```{r, warning=FALSE, message=FALSE}
+
+dataset <- function(sheetNumber){
+  sheet <- read_excel("statementofvotescastoctober242018.xls", sheet = sheetNumber, skip = 2)
+  sheet <- sheet %>% clean_names %>% filter(precinct_1 != 'City / Ville') %>% filter(precinct_1 != "Ottawa") %>% select(-"precinct_7", -"times_cast",-"undervotes",-"overvotes", - "total_votes") %>% select(-starts_with('x'))
+  return (sheet)
+  
+  fractionWins <- list();
+}
+
+determineWinner <- function(sheet){
+  
+  wardData <- dataset()
+}
+
+```
+
+
+```{r}
+
+data <- read_excel("statementofvotescastoctober242018.xls", sheet = 3, skip = 2)
+data <- data %>% clean_names %>% filter(precinct_1 != 'City / Ville') %>% filter(precinct_1 != "Ottawa") %>% select(-"precinct_7", -"times_cast",-"undervotes",-"overvotes") %>% select(-starts_with('x'))
+
+sheet <- tail(data,1)
+
+```
+In this plot, the first place winner amount of votes is compared to the second place winner in every presinct. Here we can see in this is plot that jan harder, the first place winner has either tied Hadi Wess or gotten fewer votes several times. Showing that jan harder has not beaten Hadi in every precinct . If we remove the presincts that had 0 votes for both people, there is still 1 presinct that they tied in. Jan harder has not beaten Hadi Wess everytime.
+
+# Comments
+
+In order for Jan to be considered winning in terms of votes, Jan must not have the same amount of of fewer votes than Hadi. The results do make sense because although Jan did win by a lot of total votes, different areas may disagree on people to vote for. We are assuming this data is accurate. All districts do matter.
+
+
+# Suggestions for further explorations
+
+-Ensure all presincts votes were counted properly and fairy will help the results be more accurate.
+
+
+
+
+# PART 2
+
+#Description
+We are using a proportional test to see if this coin toss is fair. 
+
+# Headline
+The following proportional test is comparing all the coin tosses and seeing if the coin toss is fair. The results of the coin toss are given. The null hypothesis is assuming that the coin toss is fair and there is no true difference in the means between head and tails. The alternate hypothesis states that the coin toss is not fair and there is a true difference in means between heads and tails. 
+
+```{r}
+x <- c("t", "t", "h", "t", "h", "h", "t", "t", "t", "t", "t", "t", "h", "h", "t", "h", "t", "t", "t", "t", "t", "h", "t", "t", "h", "t")
+
+hs = str_count(x,"h")
+ts = str_count(x,"t")
+heads <- sum(hs,1)
+tails <- sum(ts,1)
+
+prop.test(8,26, p = NULL, alternative = "two.sided", correct = TRUE)
+prop.test(18,26, p = NULL, alternative = "two.sided", correct = TRUE)
+```
+
+#Comments
+
+We are assuming that the probability of the coin landing on heads is 50%. We are also assuming the coin is being tossed fairly. The coin being heads shows that it was a success. According to the binomial test, the p value is 0.07552. Which is also the same p- value that was gotten from the previous test(binomial). Which indicates that the coin toss is indeed fair. We fail to reject the null hypothesis. If the null hypothesis should be rejected but was not, A type II error will have occured. We are 95%  sure there is no true difference. We are also assuming that the coin was tossed 26 times with no set goal. The coin was not tossed untill 8 heads or 18 tails were made. 
+
+# Suggestions for further explorations
+
+In order to have a higher chance of correctly assuming the coin toss is fair, doing more trials will have bring the probability to where it should be.
+
+# References
+
+No sources were used
+
+# Appendix: sessionInfo
+```{r}
+sessionInfo()
+```

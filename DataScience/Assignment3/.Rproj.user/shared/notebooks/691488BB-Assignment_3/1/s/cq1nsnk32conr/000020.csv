@@ -1,0 +1,5 @@
+"0","data <- read_excel(""statementofvotescastoctober242018.xls"", sheet = sheetNumber, skip = 2)
+"
+"2","Error in standardise_sheet(sheet, range, sheets_fun(path)) : 
+  object 'sheetNumber' not found
+"

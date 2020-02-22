@@ -1,0 +1,457 @@
+# Course: ITI 1120
+# Assignment Number 1
+
+import math
+import turtle
+
+########################
+# Question 1
+########################
+
+def pythagorean_pair(a,b):
+        '''
+        (int,int) -> boolean
+        Returns boolean stating whether the two integers inputed were a pythagorean pair
+        (a**2 + b**2 = c**2, where c (is a perfect square)
+        '''
+        c = math.hypot(a,b)
+        return int(c) == c
+
+
+########################
+# Question 2
+########################
+
+def mh2kh(s):
+        '''
+        (number) -> number
+        A funciton that returns kilometers per hour given the miles per hour.
+        Precondition: s is a non-negative number
+        '''
+        return s*1.60934
+        
+
+########################
+# Question 3
+########################
+
+def in_out(xs,ys,side):
+        '''
+        (number, number, number) 
+        A function that defines square plane given the coordinates of its bottom right corner (xs,ys) and its side (side).
+        Then prints boolean stating if given point (x,y) lies in the plane.
+        Precondition: side is a non-negative number
+        '''
+        x2 = xs + side
+        y2 = ys + side
+
+        x = float(input("Enter a number for the x cooridnate of a query point"))
+        y = float(input("Enter a number for the y cooridnate of a query point"))
+
+        print(xs <= x <= x2 and ys <= y <= y2)
+
+        
+########################
+# Question 4
+########################
+
+def safe(n):
+        '''
+        (int) -> none
+        A function that prints boolean stating if the integer contains or is divisible by 
+        Precondition: integer is at most 2 digits and is non-negative
+        '''
+        return (not(int(n/9) == n/9 or 9 == n % 10 or int(n/10) == 9))
+
+
+########################
+# Question 5
+########################
+
+def quote_maker(quote,name,year):
+        '''
+        (string,string,int) -> string
+        Returns sentence stating the year and the person that said the quote
+        '''
+        sentence = "In" + ' ' + str(year) + ', ' +  'a person called' + ' ' + name + ' ' + 'said: \"' + quote + '\".'
+        return sentence
+
+
+########################
+# Question 6
+########################
+
+def quote_displayer():
+        '''
+        None -> None
+        Calls for input from the user using parameters from quote_maker(), then prints result
+        '''
+        quote = input("Give me a quote.")
+        name = input("Who said that?")
+        year = str(input("What year did he/she say that?"))
+        print(quote_maker(quote, name, year))
+
+
+########################
+# Question 7
+########################
+
+def rps_winner():
+        '''
+        (string, string) -> nothing
+        Prints result of rock paper scissor game
+        Precondition: input from user must be paper, rock or scissor
+        '''
+        
+        p1 = input("What choice did player 1 make? \n Type one of the following options: rock, paper, scissors:")
+        p2 = input("What choice did player 2 make? \n Type one of the following options: rock, paper, scissors:")                   
+        p1_wins = (p1 == "rock" and p2 == "scissors") or (p1 == "scissors" and p2 == "paper") or (p1 == "paper" and p2 == "rock")
+        
+        print("Player 1 wins. That is" + ' ' + str(p1_wins))
+        print("It is a tie. That is" + ' ' + str(p1==p2))
+
+
+########################
+# Question 8
+########################
+        '''
+        (number, number) -> float
+        Returns y given x, using equation 10^(4y) = x+3
+        Precondition: x is positive
+        '''
+def fun(x):
+        y = (math.log(abs(x)+3,10))/4
+        return y
+
+
+########################
+# Question 9
+########################
+        '''
+        (string) -> none
+        Displays name in a plaque of *
+        '''
+def ascii_name_plaque(name):
+        print("***"+(len(name) * "*")+"***")
+        print("*  "+(len(name) * " ")+"  *")
+        print("*__"+ name +"__*")
+        print("*  "+(len(name) * " ")+"  *")
+        print("***"+(len(name) * "*")+"***")
+
+
+########################
+# Question 10
+########################
+        '''
+        None -> None
+        Draws a train using turtle graphics
+        '''
+def draw_train():
+        s = turtle.Screen()
+        t = turtle.Turtle()
+
+#Dark green body
+        t.fillcolor("dark green")
+        t.pensize(3)
+        t.begin_fill()
+        t.goto(100,0)
+        t.goto(100,200)
+        t.goto(0,200)
+        t.goto(0,0)
+        t.end_fill()
+        t.penup()
+
+        #roof
+        t.begin_fill()
+        t.goto(-5,210)
+        t.pendown()
+        t.goto(105,210)
+        t.goto(105,200)
+        t.goto(-5,200)
+        t.goto(-5,210)
+        t.end_fill()
+        t.penup()
+
+#Green body
+        t.fillcolor("green")#green rectangle
+        t.goto(0,0)
+        t.pendown()
+        t.begin_fill()
+        t.goto(-150,0)
+        t.goto(-150,110)
+        t.goto(0,110)
+        t.goto(0,0)
+        t.end_fill()
+        t.penup()
+
+        #large chimney
+        t.goto(-140,110)  #rectangle
+        t.pendown()
+        t.begin_fill()
+        t.goto(-140,160)
+        t.goto(-130,160)
+        t.goto(-130,110)
+        t.goto(-140,110)
+        t.end_fill()
+                          
+        t.goto(-140,160)  #large trapezoid
+        t.begin_fill()
+        t.goto(-165,203)
+        t.goto(-105,203)
+        t.goto(-130,160)
+        t.end_fill()
+
+        t.goto(-105,203) #small trapezoid
+        t.begin_fill()
+        t.goto(-111,213)
+        t.goto(-159,213)
+        t.goto(-165,203)
+        t.end_fill()
+        t.penup()
+
+        #small chimney
+        t.goto(-100,110) #rectangle
+        t.pendown()
+        t.begin_fill()
+        t.goto(-85,110)
+        t.goto(-85,125)
+        t.goto(-100,125)
+        t.goto(-100,110)
+        t.end_fill()
+        t.penup()
+
+        t.goto(-85,125) #semi-circle
+        t.setheading(90)
+        t.pendown()
+        t.begin_fill()
+        t.circle(7.5,180)
+        t.end_fill()
+        t.penup()
+
+        #medium chimney
+        t.goto(-60,110) #rectangle
+        t.setheading(0)
+        t.pendown()
+        t.begin_fill()
+        t.goto(-35,110)
+        t.goto(-35,135)
+        t.goto(-60,135)
+        t.goto(-60,110)
+        t.end_fill()
+        t.penup()
+
+        t.goto(-35,135) #semi-circle
+        t.setheading(90)
+        t.pendown()
+        t.begin_fill()
+        t.circle(12.5,180)
+        t.end_fill()
+        t.penup()
+
+#Black body
+        t.fillcolor("black") #small tire (left)
+        t.goto(-85,0)
+        t.setheading(90)
+        t.pendown()
+        t.begin_fill()
+        t.circle(20)
+        t.end_fill()
+
+        t.goto(-20,0) #small tire (middle)
+        t.begin_fill()
+        t.circle(20)
+        t.end_fill()
+        t.penup()
+
+        t.goto(90,15) #large tire (right)
+        t.begin_fill()
+        t.circle(35)
+        t.end_fill()
+        
+#Grey body
+        t.fillcolor("grey") #inner tire (left)
+        t.goto(-95,0)
+        t.begin_fill()
+        t.circle(10)
+        t.end_fill()
+
+        t.goto(-30,0) #inner tire (middle)
+        t.begin_fill()
+        t.circle(10)
+        t.end_fill()
+
+        t.goto(80,15) #inner tire (right)
+        t.begin_fill()
+        t.pendown()
+        t.circle(25)
+        t.end_fill()
+        t.penup()
+
+        t.goto(-125,-10)#rectangle on wheels
+        t.pendown()
+        t.begin_fill()
+        t.goto(-125,-2)
+        t.goto(-45,-2)
+        t.goto(-45,-10)
+        t.goto(-125,-10)
+        t.end_fill()
+        t.penup()
+
+        t.goto(-150,55)#triangle in front of train
+        t.pendown()
+        t.begin_fill()
+        t.goto(-150,-20)
+        t.setheading(180)
+        t.circle(-350,7)
+        t.circle(-5,140)
+        t.goto(-150,55)
+        t.end_fill()
+
+#Blue body
+        t.fillcolor("light blue") #front window
+        t.begin_fill()
+        t.setheading(135)
+        t.circle(-35,90)
+        t.goto(-150,55)
+        t.end_fill()
+        t.penup()
+
+        t.goto(10,185) #back window
+        t.pendown()
+        t.begin_fill()
+        t.goto(90,185)
+        t.goto(90,125)
+        t.goto(10,125)
+        t.goto(10,185)
+        t.end_fill()
+
+########################
+# Question 11
+########################
+
+def alogical(n):
+        '''
+        (number) -> int
+        Returns number of times n can be divided by 2 in order to get a number equal to or smaller than 1
+        Precondition: n >= 1
+        '''
+        n = math.ceil(math.log2(n))
+        return n
+        
+
+########################
+# Question 12
+########################
+
+def time_format(h,m):
+        '''
+        (int,int) -> str
+        Returns string expressing hours (h) and minutes (m) expressing the time
+        Precondition: 0 =< h =< 23 and 0 <= m < 60
+        '''
+        rm = round(m/5)*5
+
+        if rm == 0:
+                return str(h) + " o\'clock"
+
+        elif rm < 30:
+                return str(rm) + " minutes past " + str(h) + " o\'clock"
+                
+        elif rm == 30:
+                return "half past " + str(h) + " o\'clock"  
+
+        elif rm < 60:
+                h = h + 1
+                if h == 24:
+                        h = 0
+                return str(60-rm) + " minutes to " + str(h) + " o\'clock"
+
+        elif rm == 60:
+                h = h + 1
+                if h == 24:
+                        h = 0
+                return str(h) + " o\'clock"
+
+        
+########################
+# Question 13
+########################
+
+def cad_cashier(price,payment):
+        '''
+        (number,number) -> number
+        Returns the change given the price and payment
+        Precondition: price and payment are non negative, and up to 2 decimal places
+        '''
+        real_change = payment - price
+        return round(real_change*20)*5/100
+
+        
+########################
+# Question 14
+########################
+
+def min_CAD_coins(price,payment):
+        '''
+        (number,number) -> (int,int,int,int,int)
+        Returns minimum number of coins that is equal to the change of the given price and payment
+        Precondition: price and payment are positive, and up to 2 decimal places
+        '''
+        cents = round(cad_cashier(price,payment)*100)
+        t = 200
+        l = 100
+        q = 25
+        d = 10
+        n = 5
+
+        #number of toonies
+        t1 = int(cents/t)
+        cents = cents - t1*t
+
+        #number of loonies
+        l1 = int(cents/l)
+        cents = cents - l1*l
+
+        #number of quarters
+        q1 = int(cents/q)
+        cents = cents - q1*q
+
+        #number of dimes
+        d1 = int(cents/d)
+        cents = cents - d1*d
+
+        #number of nickels
+        n1 = int(cents/n)
+        
+        
+        return (t1, l1, q1, d1, n1)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

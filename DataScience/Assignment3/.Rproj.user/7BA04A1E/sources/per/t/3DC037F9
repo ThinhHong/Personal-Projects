@@ -1,0 +1,27 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1569956517133.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2840629470",
+    "id" : "3DC037F9",
+    "lastKnownWriteTime" : 1569976830,
+    "last_content_update" : 1569976830357,
+    "path" : "~/Desktop/SDS3386/Assignment3/Assignment_3.Rmd",
+    "project_path" : "Assignment_3.Rmd",
+    "properties" : {
+        "chunk_output_type" : "inline",
+        "cursorPosition" : "43,22",
+        "scrollLine" : "32",
+        "tempName" : "Untitled1"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

@@ -1,0 +1,205 @@
+#Thinh Hong
+#8755572
+#ITI 1120
+#Assignment NO.1
+
+########################
+# Question 2.1
+########################
+
+def min_closing_rectangle(radius,x,y):
+    """
+    (int,int,int)->(int,int)
+    Precondition: if side is -, returnes none. must be a number 
+    Determines the x and y coordinate of the bottom left corner of a axis alligned
+    rectangle that encloses a circle
+    """
+    xl=x-radius
+    yl=y-radius
+    if (radius)<0:
+        return None
+    return (xl,yl)
+
+#######################
+# Question 2.2
+#######################
+
+def series_sum():
+    """
+    int->int
+    Preconditions:Must be a number
+    Returns 1000+1000/1**2+1000/2**2...1000/n**2
+    """
+    n=int(input("Please enter a non-negative integer"))
+    if n<0:
+        return None
+    summ=1000
+    for i in range(1,n+1):
+        summ=summ+1/i**2
+    return summ
+
+#######################
+# Question 2.3
+#######################
+import math
+def pell(n):
+    """
+    int->int
+    returns pell number given n
+    Preconditions:Must enter an int
+    """
+    if n<0:
+        return None
+    if n==00:
+        return 0
+    if n==1:
+        return 1
+    Pn=2*pell(n-1)+pell(n-2)
+    return Pn
+   
+
+    
+#######################
+# Question 2.4
+#######################
+
+def countMembers(s):
+    """
+    str->int
+    Precondition:Input a string
+    Counts how many charecters are extraordinary
+    """
+    count=0
+    for i in s:
+        if i in ("efghijFGHIJKLMNOPQRSTUVWX23456!\,"):
+            count=count+1
+    return count
+            
+#######################
+# Question 2.5
+#######################
+
+def casual_number(s):
+    """
+    str->int
+    returns a integer representing s
+    Preconditions:input a string that looks like a number
+    """
+    s=s.replace(",","" )
+    for i in s:
+        if i not in ("-123456789"):
+            return None
+    return int(s)
+
+#######################
+# Question 2.6
+#######################
+def alienNumbers(s):
+    """
+    str->int
+    return integer value showing alien Numbers
+    Preconditions: phrase must have only T,y, !,a, N,U
+    """
+    
+    Total=s.count("T")*1024+s.count("y")*598+s.count("!")*121+s.count("a")*42 +s.count("N")*6 +s.count("U")
+    return(Total)
+                                                        
+                                                                           
+
+#######################
+# Question 2.7
+#######################
+
+def alienNumbersAgain(s):
+    """
+    str->int
+    return integer value showing alien Numbers
+    Preconditions: phrase must have only T,y, !,a, N,U
+    """
+    Total=0
+    for i in s:
+        if i in "T":
+            Total=Total+1024
+        elif i in "y":
+            Total=Total+598
+        elif i in "!":
+            Total=Total+121
+        elif i in "a":
+            Total=Total+42
+        elif i in "N":
+            Total=Total+6
+        elif i in "U":
+            Total=Total+1
+
+    return(Total)
+
+#######################
+# Question 2.8
+#######################
+
+def encrypt(s):
+    """
+    str->str
+    Preconditions: Must input a string
+    Returns an encrypted message
+    """
+    s=s[::-1]
+    news=""
+    for i in range(len(s)):
+        news=news+s[i]+s[-i-1]
+        if len(news)==len(s):
+            return news
+        if len(news)==len(s)-1:
+            news=news+s[i+1]
+            return news
+    
+#######################
+# Question 2.9
+#######################
+def oPify(s):
+    """
+    str->str
+    returns string with o and p inbetween consecutive charecters of s
+    Preconditions:must input a str
+    """
+    if len(s)==1:
+        return (s)
+    oP=""
+    for i in range(len(s)):
+        if str.isupper(s[i])==True:
+            oP=oP+s[i]+"O"
+            if str.isupper(s[i+1])==True:
+                oP=oP+"P"
+            else:
+                oP=oP+"p"
+
+        elif str.isalpha(s[i])==False:
+            oP=oP+s[i]
+
+        elif str.isupper(s[i])==False:
+            oP=oP+s[i]+"o"
+            if str.isupper(s[i])==True:
+                oP=oP+"P"
+            else:
+                oP=oP+"p"
+
+    return oP
+        
+        
+            
+#######################
+# Question 2.10
+#######################
+def nonrepetitive(s):
+    """
+    str->bool
+    returns whether of not a word is repetitive or not
+    Preconditions: Must input a string
+    """
+    for i in s:
+        s=s[i:len(s)]
+    if s1==s2 or s1==s3 or s1==s4 or s2==s3 or s2==s4 or s3==s4:
+        return True
+    else:
+        return False
+    

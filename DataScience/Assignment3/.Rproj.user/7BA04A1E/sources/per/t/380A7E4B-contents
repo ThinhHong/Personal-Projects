@@ -1,0 +1,94 @@
+---
+title: "SDS 3386 <br> Lecture 3 v1"
+author: "Peter Rabinovitch"
+date: "`r Sys.Date()`"
+output: slidy_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, warnings = FALSE, message = FALSE, echo = FALSE, }
+library(readxl)
+library(dplyr)
+library(janitor)
+library(ggrepel)
+library(knitr)
+library(stringr)
+library(tidyr)
+library(readr)
+library(tibble)
+```
+
+
+# Stuff
+- any questions?
+- assignment #1
+- assignment #2
+
+# Assignments
+- Again, write it like a report to your boss
+    - no results hanging around without explanation
+    - if you show something there should be a reason
+    - alternatively, simply saying 'yes' is not enough. 
+        - Plots help, so do sentences.
+    - be careful with labeling of axes.
+    - be careful of losing data 
+        - if you start out with 46 rows and end up with 23, you better explain why
+    - figure out what you are gong to do about ties and make your sentences and code match
+    - if you have a reference for something, please indicate where it was used, eg # ref 1
+    - hiding code with echo=false is a bad idea because when you are explaining what went wrong to your boss you won't recall what the hidden code did
+- Show **Donor Base Size**
+
+# About the project
+- team project  
+- expecting rmd & html slides  
+- about 4 slides, 5 min presenting, 5 min questions   
+- what, why, how  
+- timeline:
+  - need topic approved by me (in writing, via email)  
+  - this may take several iterations  
+  - don't attempt to get my approval Oct 6.  
+  - present on Oct 7   
+
+# How to do slides in knitr
+
+# How to learn this stuff
+- read the code  
+- look up any functions you don't know  
+- build small examples  
+- execute line by line
+- tribble is your friend
+
+
+# RStudio Projects
+- why  
+- how  
+
+
+# Homework (Individual) 
+- Part I
+    - I want a plot that shows me, for each ward, the fraction of the precincts where the winner of the ward beat the runner up in the ward.
+    - The plot should show all wards, be properly labeled, easy to read, etc.
+    - The doc should use the template, and write it up like it is going to your (potential) boss
+    - Grading on this homework will be according to the rubric in the course outline...and will be tougher than the first one!
+- Part II
+    - I tossed a coin and got these results:
+        x <- c("t", "t", "h", "t", "h", "h", "t", "t", "t", "t", "t", "t", "h", "h", "t", "h", "t", "t", "t", "t", "t", "h", "t", "t", "h", "t")
+    - Do a **different** hypothesis test to see if the coin is fair
+        - note just calculating by hand what one of the built in functions does is **not** different
+    - Please be painfully explicit about what you are assuming
+- due Oct 1, 23:59
+
+
+# Tonight
+- We will discuss writing your own functions
+- We will discuss writing loops
+- We will discuss pulling things out of data frames using positions
+- We will discuss a bunch of useful functions
+
+
+
+
+
