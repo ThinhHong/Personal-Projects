@@ -1,0 +1,137 @@
+---
+title: "SDS 3386"
+subtitle: "Assignment 5"
+author: "Thinh Hong"
+date: "`r Sys.time()`"
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_float: true
+---
+
+
+```{r, warning=FALSE, message=FALSE}
+# load libraries
+library(dplyr)
+library(janitor)
+library(ggplot2)
+library(skimr)
+library(tidyverse)
+library(broom)
+library(readxl)
+library(Rfast)
+```
+# Description
+ By studying the data in the statementofvotescastoctober242018.xls,it is being deterrmined that if the winner and runner up are close in votes, there will be a
+# Headline
+
+The following plot is the fraction of eligable voters that actually voted. Excluding Special or Advanced wards. Data was collected from the 2018 election results. Special precincts are ignored for this plot.
+
+```{r, warning=FALSE, message=FALSE}
+
+# Read dataset 
+dataset <- read_excel("statementofvotescastoctober242018.xls", sheet = "Summary",skip = 2)
+
+# Cleaning dataset and getting the turnout rate
+dataset <- dataset[-c(1,2),]
+dataset <- dataset %>%
+  select(-(...3))%>%
+  filter(!grepl('Adv',Precinct))%>%
+  clean_names() %>%
+  mutate(ward = as.numeric(str_sub(precinct, 0, 2)))%>%
+  group_by(ward) %>%
+  summarise(
+    registered_voters = sum(registered_voters),
+    cards_cast = sum(cards_cast)
+  ) %>%                                                  
+  mutate(fraction_voted = cards_cast / registered_voters) %>%
+  na.omit()
+
+# Function to clean every ward with uneccesary rows. Also removes special precints
+wardCleaner <- function(sheetNumber){
+  data <- read_excel("statementofvotescastoctober242018.xls", sheet = sheetNumber,skip = 2)
+  data <- data %>% 
+    clean_names() %>%
+    select(-starts_with("x")) %>%
+    select(-precinct_7,-overvotes,-undervotes,-times_cast) %>%
+    filter(precinct_1 != "City / Ville") %>%
+    filter(precinct_1 != "Ottawa") %>%
+    filter(!grepl('Adv',precinct_1))%>%
+    filter(!str_detect(precinct_1, "City / Ville - Total")) %>%
+    rename(precinct = precinct_1)
+  return (data)
+}
+# Function to get winner and runnerUp votes
+GetWinnerResults <- function(ward) {
+  # gets the cleaned sheet data
+  sheet_data <- wardCleaner(str_c('Ward ', toString(ward)))
+  winner_results <- sheet_data %>%
+    select(-precinct) %>%
+    select(-total_votes) %>%
+    summarise_each(sum) %>%
+    # addts new colums
+    pivot_longer(
+      cols = everything(), 
+      names_to = 'candidate',
+      values_to = 'votes'
+    ) %>% 
+    ## summarise and gets total votes for winner and runner up
+    summarise(
+      winner = candidate[which.max(votes)],
+      runner_up = candidate[which(votes == Rfast::nth(votes, 2, descending = T))],
+      total_votes = sum(votes),
+      votes_runner = Rfast::nth(votes, 2, descending = T),
+      votes_winner = max(votes)
+    ) %>%
+    # adds fractions of votes for winner, runner up and how much the runner up won by
+    mutate(
+      fraction_votes_won = votes_winner / total_votes,
+      fraction_votes_runner = votes_runner / total_votes,
+      fraction_votes_won_by = votes_winner / votes_runner,
+      ward = ward
+      )  
+  # Selects important columns for this hypothesis
+  winner_results <- winner_results %>% 
+    select(ward, winner, runner_up,fraction_votes_won_by,total_votes,)
+  
+  return(winner_results)
+}
+# Creates a new tibble
+wardWinners <- tibble()
+# Creates a for loop for every ward and binds the rows to the tibbleturnout rate and changes the name to the wardWinneers
+ 
+
+# Creates a linear model with turnout as x factor and fractions won by as the y
+model_fit <- lm(fraction_votes_won_by ~ turnout, data = wardWinners)
+# final summary of the wardWinners linear model
+summary(model_fit)
+# plots points of all the wards as x factor and fractions won by as the y
+wardWinners %>% 
+  ggplot(aes(x = fraction_votes_won_by, y =turnout)) + 
+  geom_point() +
+  geom_smooth(se = FALSE, method = "lm")
+
+
+
+```
+
+
+In this plot, the turnout fraction is put against the fraction of which the winner beat the runner up. Here we can see that as the fraction_votes_won by increases, the turnout also decreases. Since there is a Rsquared value of 0.1146 and an adjusted R-squared value of 0.073349 and a p value of 0.1142, it is proven there is a correlation.
+# Comments
+In order to prove there is a correlation between turnout rate and by how much the winner beat the runner up the p- value is looked at. Since the p-value is 0.11, above 0.05 and 0 it shows that the slope is most likely not 0. However, it is proven to be false. This result is based on no augment or outlier removal.
+The results do makes sense as the the highest turnout rates appear with the lowest fraction won by the winner. Also the highest fraction win rate also has the lowest turnout rate.  Varying results could happen due to population change, density between all the wards. Assumptions include that all votes were accounted for fairly. All advance and special precints are removed from the dataset since the had 0 votes. Other assumptions include the precints are all anaylized fairly. 
+
+
+# Suggestions for further explorations
+
+-Ensure all presincts votes were counted properly and fairy will help the results be more accurate. In order to perhaps get a more accurate results. We could use a multivarable linear regression model. With more independing factors such as population density and numbers, and household density.
+
+
+# References
+
+Learned from other students including Shaafici Ali and Quan vinh for winnerResults
+# Appendix: sessionInfo
+```{r}
+sessionInfo()
+```
