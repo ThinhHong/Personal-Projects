@@ -49,6 +49,8 @@ library(GGally)
 library(tidyverse)
 library(olsrr)
 library(MASS)
+library(Hmisc)
+
 setwd("~/")
 ```
 
@@ -120,22 +122,22 @@ plot(lm_log)
 ```
 
 
-After viewing the Density of the log of Triglyceride, the data appears to be more normal as the line follows a normal distribution. The E[ei] = 0 appears to be violated because of many outliers (25,3,59), therefore they maybe should be removed.  There appears to be more variance towards the middle values of Triglyceride making this condition violated. There is a semi straight line going through the middle of the residuals. Which verifies the linerality assumption. Based on the qq plot, we can see that the data is more normally distributed when compared to the orginal qq plot. As the high tail end follows a straight line more with only 1 outlier. When comapred to the orginal residual plot, residuals appear to be more spread out, follow less of a pattern and appear to have expected value of 0 and variance of simga^2.There appears to be no distinct pattern on the residuals term. Therefore, the last condition is met. Based on the With standarized residuals, it appears to mostly follow a straight line except towards the end due to an outlier. This means the residuals don't depend on the mean unlike the orginal.  the Another problem is that their appears to be co linearity. This is due to the independent variables representing similar things. For example, smoking and cigarettes are very similar. As if a person does not smoke, their cigarettes count will also be zero. Therefore we will remove the smoking variable. As well as diabetes leading to higher level blood sugar. More randonmly distributed around 0.
+After viewing the Density after the log transformation, the data appears to be more normal as the qqplot shows a straight line and the histogram shows more of normal curve when compared to the orginal. The same outliers appear indicating the error is not distributed around 0.  The residual line is somewhat straight around 0 and verifies the linearity assumption. Based on the residuals against the fitted values, the plot lines do not follow any pattern therefore, the data appears to have no serial correlation. When viewing the square root of the standardized residuals  against the fitted values, the line slighty increases towards the end, indication heteroskedasticity of the residuals. A problem is that their appears to be co linearity. This  maybe due to the independent variables representing similar things. For example, smoking and cigarettes are very similar. As if a person does not smoke, their cigarettes count will also be zero. 
 
-```{r Warning = FALSE}
 
-```
 
 ```{r}
-white_test(lm_full)
+white_test(lm_log)
 ```
+
+White's test p-value = to 0.025239 < 0.05 indicates there is heteroskedasticity of the residuals and varies with expected value of a data point.
+Therefore the variance of the residuals increases with the fitted values.
 
 ```{r}
 dwtest(lm_log, alternative = "two.sided")
-
 ```
 
-Since the Durbin- watson test has a value of 2.0325 and pvalue = to 0.809, there is no evidence that the true autocorrelation is not zero. Therefore generalized least squares is not neccesary. It appears weighted regression is also not needed.
+Since the Durbin- watson test has a value of 2.006 and pvalue = to 0.3345>0.05, there is no evidence that the true autocorrelation is not zero. Therefore generalized least squares is not necessary. It appears weighted regression is also not needed.
 
 ```{r}
 ols_plot_resid_stud_fit(lm_log)
@@ -156,33 +158,22 @@ abline(h=1,col="red",lty=2)
 text(ind,df_log$CVR-0.05,labels=ind,cex=0.75)
 ```
 
-There are many observations that require looking at since they are potential outliers and have an influence on estimates and predicted values (3 45,174,111,2,30,115,66,122,21,150,25,59) they have high leverage. . There are also several observations that have a significant influence on the least square estimates and predict/fitted values (59,3,5,25,34,45,97,111,122,150), 59 having the largest influece
-,174,168,212,222.Those outliers also have influence on some estimates of the regression related to the independent variables. There are many values that leverages that are also outliers.  (59,34,178,169,100,58,155,8,97,15,94)
-Based on the covariance plot, there are many observations that have a negative impact on the precision of the regression model, including the flag ones. These values require special attention as they may come from source of measuring error. Such as faulty measurement, analysis and others. Perhaps these errors are important information as some people are more affected by the independent variables and others. A few outliers cause the residual plot to not be completely random and have a variance sigma^2 around the 0. There should be further analysis on the outliers on experts to support deletion of outliers from data. From the covariance plot, it is showed that are many observations that have a negative impact on the regression model with values 3,5,19 have a bigger negative impact
+There are many observations that require looking at since they are potential outliers (3 45,174,111,2,30,115,66,122,21,150,25,59) that require more attention and researched. Based on Cook's distance  observations that have a significant influence on the least square estimates and predict/fitted values (59,3,5,25,34,45,97,111,122,150,174,178,212,222), 59 having the largest influence From the rstudent vs leverage graph, 59 is a value that is both high leverage and a large influencer on the least square estimates and predicted/fitted values.
+Based on the covariance plot, there are many observations that have a negative impact on the precision of the regression model, including the flag ones. These values require special attention as they may come from source of measuring error. Such as faulty measurement, analysis and others. Perhaps these errors are important information as some people are more affected by the independent variables and others. A few outliers cause the residual plot to not be completely random and have a variance sigma^2 around the 0. There should be further analysis on the outliers from experts in the field to support the deletion of outliers from data. From the covariance plot, it is showed that are many observations that have a negative impact on the regression model(3,5,19).
 
 ```{r}
-x <- df_log[,2:19]
-rho <- cor(x)
+df.numeric <- read.csv("Triglyceride.csv")
+df.numeric$Triglyceride <- log(df.numeric$Triglyceride)
+X <- df.numeric [,2:19]
+X <- as.matrix(X)
 
-rho2 <- cor(x)
+round(eigen(t(X)%*%X)$values,4)
+rho <- cor(X)
 round(rho,2)
-corrplot(rho, type = "upper", order = "hclust", 
-         tl.col = "black", tl.srt = 45)
 
-ggcorr(data = NULL, cor_matrix = rho)
-corrplot(rho2,type = "upper")
+corrplot(rho,type = "upper")
 
-ggcorr(data=NULL, cor_matrix =rho2,label = TRUE)
 
-vif(lm_log)
-solve(cor(x))
-
-x <- as.matrix(x)
-
-round(eigen(t(x)%*%x)$values,4)
-
-eigen(t(x)%*%x)
-colldiag(lm_log,add.intercept = F, scale=F)
 ```
 
 Based on the half heat map, we can see there are many variables that are correlated. For example, it appears
@@ -191,18 +182,17 @@ sex is correlated with height and weight. This shows that the 2 value in sex ind
 ```{r}
 model_in=lm(Triglyceride ~ 1,data= df_log)#initial model, with only intercept
 model_s3 <- stepAIC(object=model_in,direction="both",scope = formula(lm_log))
-model_s3$anova
-ols_step_both_p(lm_log)
-
+model_out=lm(Triglyceride ~ .,data= df.numeric)#initial model with numerical values
+ols_step_both_p(model_out)
 ```
 
-By comparing the regression coefficients between the full model and reduced model, we can see that 
-there is only a 0.3535 - 0.331 = 0.0225 less R^2 and 0.3145-0.3031 more adjusted R^2. The akialkie's information Criterion values start at 398.7462 and lowers a decent amount until the weight is accounted for.
+Both addition and deletion variable selection is implemented.By comparing the regression coefficients between the full model and reduced model. Only 5 addition steps were done and no deletions occured.
+there is only a 0.3492 0.2542 = 0.095 less R^2 . The akialkie's information Criterion values start at 2929.4338 and lowers slighty until the 5th variable Cholesterol_Trt is added. The high AIC value indicates the model is not good. variables Only 5/19 variables are seen to be significant. 
 
 ```{r}
+lm_reduced <- lm(Triglyceride ~ Diabetes_Status + HDL + TSC + LDL + Cholesterol_Trt, data = df_log)
+summary(lm_reduced)
 
 ```
 
 
-
-## Including Plots
