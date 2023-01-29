@@ -34,6 +34,7 @@ my_user = config['userID']['username']
 my_password = config['userID']['password']
 query = "?api_key="
 find = "&api_key="
+champions = config['userID']['champions']
 
 match_regions = ["sea","asia","americas","europe"]
 player_regions = ["br1","eun1","euw1","jp1","kr","la1","la2","na1","oc1","ph2","ru","sg2","th2","tr1","tw2","vn2"]
@@ -128,9 +129,54 @@ class RiotApi:
             except Exception as e:
                   print(f'Could not get values {e}')
 
+def get_champions(url):
+      try:
+            return requests.get(url).json()
+      
+      except Exception as e:
+            print(f'Could not get values {e}')
 
 
-def insert_query_dictionary(connection,data,table):
+def insert_champions(connection,champions,table):
+      version = champions["version"]
+      data = champions['data']
+      columns = f"(id,champ_name,version,attack,defense,magic,difficulty)"
+      try:
+            with connection.cursor() as cursor:
+                  for item, key in data.items():
+                        stats = get_stats(key['info'])
+                        values = f"({key['key']},'{item}','{version}',{stats})"
+                        query = f"INSERT INTO {table} {columns} VALUES {values}"
+                        cursor.execute(query)
+                        connection.commit()
+                        insert_type(connection,key['key'],key['tags'],"type")
+      except Error as e:
+            print(f"Error: {e}")
+      
+
+
+def insert_type(connection,id,type,table):
+      columns ="(tags,id)"
+      try:
+            with connection.cursor() as cursor:
+                  for tag in type:
+                        print(type)
+                        values = f'("{tag}",{id})'
+                        query = f"INSERT INTO {table} {columns} VALUES {values}"
+                        print(query)
+                        cursor.execute(query)
+                        connection.commit()
+
+      except Error as e:
+            print(f"Error: {e}")
+
+def get_stats(list):
+      stats = ""
+      for item in list.values():
+            stats = f"{stats},{item}"
+      return stats[1:]
+
+def insert_query_user(connection,data,table):
       columns = ""
       values = ""
       for key,item in data.items():
@@ -153,7 +199,21 @@ def insert_query_dictionary(connection,data,table):
       except Error as e:
             print(f"Error: {e}")
 
-def insert_match            
+
+
+def insert_match_history(connection,data,table):
+      columns = "(match_id)"
+      try:
+            with connection.cursor() as cursor:
+                  for item in data:
+                        print(item)
+                        values = ""
+                        values = f'("{item}")'
+                        query = f"INSERT INTO {table} {columns} VALUES {values}"
+                        cursor.execute(query)
+                        connection.commit()
+      except Error as e:
+            print(f"Error: {e}")
 
 
 naServer = RiotApi(api_key,"americas","na1")
@@ -161,6 +221,7 @@ name = naServer.get_summoner_info_name("moman1898")
 puuid = naServer.get_puuid(name)
 matchHistory = naServer.get_match_history_id(puuid)
 challenger = naServer.get_challenger()
+insert_query_user
 
 
 connection = mysql.connector.connect(
@@ -170,6 +231,4 @@ connection = mysql.connector.connect(
             database = 'leagueoflegends'
 
 )
-
-print(type(matchHistory[0]))
-
+insert_query_user(connection,name,"user")
