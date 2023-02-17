@@ -1,0 +1,195 @@
+CREATE DATABASE leagueoflegends;
+DROP DATABASE leagueoflegends;
+USE leagueoflegends;
+
+CREATE IT NOT EXIST TABLE player(
+    id VARCHAR(80),
+    account_id VARCHAR(80),
+    puuid VARCHAR(80),
+    name VARCHAR(25),
+    profile_icon_id INTEGER,
+    revision_date VARCHAR(30),
+    summoner_level INTEGER,
+    PRIMARY KEY (id,account_id,puuid,name)
+);
+
+DROP TABLE champion;
+
+SELECT * FROM player;
+
+SELECT * FROM player WHERE id = '2is9t6r3MJWwswVeXxqLS81Ga5DCZ5fR12VZpXNEnbbVaLA';
+
+SELECT * FROM ranked;
+
+
+
+CREATE TABLE champion(
+    champion_id INTEGER PRIMARY KEY,
+    champion_name VARCHAR(15) NOT NULL,
+    version VARCHAR(10) NOT NULL,
+    attack INTEGER,
+    defense INTEGER,
+    magic INTEGER,
+    difficulty INTEGER
+);
+
+CREATE TABLE type(
+    tags VARCHAR(10),
+    champion_id INTEGER,
+    PRIMARY KEY (champion_id,tags),
+    FOREIGN KEY (champion_id) REFERENCES champion(champion_id) ON DELETE CASCADE
+);
+
+CREATE TABLE items(
+    item_id INT,
+    item_name VARCHAR(30),
+    PRIMARY KEY (item_id) 
+);
+
+
+SELECT * FROM champion;
+
+DROP TABLE type;
+DROP TABLE champion;
+DROP TABLE ranked;
+
+CREATE TABLE mastery(
+    champion_id INT, 
+    champion_level INT,
+    champion_points INT,
+    last_play_time VARCHAR(30),
+    points_since_last_level INT,
+    points_till_next_level INT,
+    chest_granted TINYINT,
+    tokens_earned INT,
+    id VARCHAR(50),
+    PRIMARY KEY(champion_id,id),
+    FOREIGN KEY(champion_id) REFERENCES champion(champion_id) ON DELETE CASCADE,
+    FOREIGN KEY(id) REFERENCES player(id) ON DELETE CASCADE
+);
+
+
+);
+
+CREATE TABLE ranked(
+    league_id VARCHAR(50),
+    queue_type VARCHAR(15),
+    tier VARCHAR(10),
+    division VARCHAR(10),
+    id VARCHAR(80),
+    account_id VARCHAR(80),
+    puuid VARCHAR(80),
+    name VARCHAR(25),
+    points INT,
+    wins INT,
+    loses INT,
+    veteran TINYINT,
+    inactive TINYINT,
+    freshBlood TINYINT,
+    streak TINYINT,
+    PRIMARY KEY(league_id,id,account_id,puuid,name),
+    FOREIGN KEY (id,account_id,puuid,name) REFERENCES player(id,account_id,puuid,name) ON DELETE CASCADE
+);
+
+INSERT INTO ranked VALUES ("9c8422dd-4fce-344c-832e-e907c73f7935","RANKED_SOLO_5x5","CHALLENGER","I","lRJwWdjq1MSSz7fyM4FfL65Ms237Z9FNk8ct4di-Fw_0lm8","-nQOoZ8NLT6bsW61CbL6xIfmI_aWfr0kzDJ2jD1UjtAOswo","zZDfPnSlz2xPqWgN2Mu6-Y1VOiyOMbLlkyV2P3ebHwez-5uz9hZ501RRi7TBln4L6xejhuzoE5hB_g","Piqueos",574,116,106,0,0,1,1);
+DROP TABLE ranked;
+
+
+CREATE TABLE game(
+    match_id VARCHAR(20),
+    data_version VARCHAR(3),
+    duration INT,
+    game_id VARCHAR(30),
+    mode VARCHAR(15),
+    game_version VARCHAR(15),
+    map_id INT,
+    region VARCHAR(15),
+    PRIMARY KEY (match_id)
+);
+
+DROP TABLE game;
+
+SELECT * FROM game;
+
+CREATE TABLE match_history(
+    match_id VARCHAR(40),
+    id VARCHAR(80),
+    account_id VARCHAR(80),
+    puuid VARCHAR(80),
+    name VARCHAR(30), 
+    PRIMARY KEY (match_id,account_id,id,puuid,name),
+    FOREIGN KEY (match_id) REFERENCES game(match_id) ON DELETE CASCADE, 
+    FOREIGN KEY (id,account_id,puuid,name) REFERENCES player(id,account_id,puuid,name) ON DELETE CASCADE
+);
+
+SELECT item_id
+FROM items
+WHERE items.item_name = 'bloodthirster';
+
+SELECT *
+FROM participant
+RIGHT JOIN items
+WHERE participant.item0 = {item}
+
+
+WHERE 3853 in (SELECT item0 FROM participant WHERE participant.win = 1);
+
+SELECT item0,item1,item2,item3,item4,item5,item6 FROM participant WHERE item0 = 6617 ;
+SELECT * FROM participant WHERE item0 = 3853 OR item1 = 3853 ;
+SELECT * FROM items;
+
+CREATE TABLE participant(
+    match_id VARCHAR(40),
+    assist INT,
+    champion_level INT,
+    champion_id INT,
+    champion_name VARCHAR(20),
+    dmg_to_turrets INT,
+    deaths INT,
+    first_blood TINYINT,
+    first_tower TINYINT,
+    gold_spend INT,
+    item0 INT,
+    item1 INT,
+    item2 INT,
+    item3 INT,
+    item4 INT,
+    item5 INT,
+    item6 INT,
+    kills INT,
+    participate_id INT,
+    sumoner_level INT,
+    id VARCHAR(80),
+    team_position VARCHAR(10),
+    total_damage INT,
+    total_damage_taken INT,
+    minions_killed INT,
+    turret_kills INT,
+    win TINYINT,
+    PRIMARY KEY (match_id,champion_id,id),
+    FOREIGN KEY (match_id) REFERENCES game(match_id) ON DELETE CASCADE,
+    FOREIGN KEY (champion_id) REFERENCES champion(champion_id)ON DELETE CASCADE,
+    FOREIGN KEY(id) REFERENCES player(id) ON DELETE CASCADE
+);
+
+SELECT * FROM participant;
+SELECT * FROM high_ranked;
+
+
+SELECT COUNT(participant.win)
+FROM participant
+INNER JOIN high_ranked 
+ON participant.id = high_ranked.id
+WHERE participant.id = high_ranked.id AND participant.champion_name = 'Soraka' AND participant.win = 1;
+
+SELECT COUNT(p.win)
+FROM participant AS p
+WHERE p.item0 = 3072 OR p.item1 = 3072 OR p.item2 = 3072 OR p.item3 = 3072 OR p.item4 = 3072 OR p.item5 = 3072 OR p.item6 = 3072;
+
+SELECT COUNT(p.win)
+FROM participant AS p
+WHERE (p.item0 = 3072 OR p.item1 = 3072 OR p.item2 = 3072 OR p.item3 = 3072 OR p.item4 = 3072 OR p.item5 = 3072 OR p.item6 = 3072)AND p.win = 1;
+
+SELECT COUNT(p.win)
+FROM participant AS p
+WHERE p.item0 = (3072 OR p.item1 = 3072 OR p.item2 = 3072 OR p.item3 = 3072 OR p.item4 = 3072 OR p.item5 = 3072 OR p.item6 = 3072) AND p.win = 1;
