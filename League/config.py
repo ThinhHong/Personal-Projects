@@ -9,7 +9,6 @@ config["userID"] = {
     "username" : "root",
     "password" : "Pokemon25",
     "database" : "leagueoflegends",
-    "apiKey" : "RGAPI-5f3278e4-905a-4574-9042-fd0ba52b4a08",
     "intialSummoner" : "https://{regionPlayer}.api.riotgames.com/lol/summoner/v4/summoners/",
     "by_name" : "by-name/",
     "by_account" : "by-account/",
