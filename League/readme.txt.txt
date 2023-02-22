@@ -11,6 +11,11 @@ Once you have your key, you'll need to add it to the config.py file and run it, 
 Using the API
 To make a request to the Riot API, you'll need to use the requests library in Python. The RiotAPI.py file contains several functions that make requests to the API 
 and return the resulting data as a JSON object that is converted to a dictionary.
+All request are put on a 1.5 sleep timer in order to comply with Riot's API rules indicating that RATE LIMITS
+20 requests every 1 seconds(s)
+100 requests every 2 minutes(s)
+Note that rate limits are enforced per routing value (e.g., na1, euw1, americas)
+Sleep time can be reduced if a person obtains a faster production key by contacting Riot headquarters and explaining your product.
 
 Uploading Data to SQL
 Once you've gathered data from the Riot API, you can upload that data to a SQL database using the mysql.connector library in Python. 
@@ -25,7 +30,7 @@ Before running the project, you'll need to configure the config.py file with you
 To do this, copy the config.py file  and fill in the appropriate values. You'll need to provide the following information:
 
 Your MySQL host name
-Your Riot API key
+Your Riot API key, API key is personalized and should not be shared online
 The name of your MySQL database
 The username and password for your MySQL database
 Conclusion
