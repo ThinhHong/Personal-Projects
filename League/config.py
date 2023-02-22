@@ -6,9 +6,9 @@ config = configparser.ConfigParser()
 config["userID"] = {
     "startDate" : datetime.today().strftime('%Y-%m-%d'),
     "host" : "localhost",
-    "username" : "root",
-    "password" : "Pokemon25",
-    "database" : "leagueoflegends",
+    "username" : "YOURUSERNAME",
+    "password" : "YOURPASSWORD",
+    "database" : "YOURDATABASE",
     "apiKey" : "YOURAPIKEY",
     "intialSummoner" : "https://{regionPlayer}.api.riotgames.com/lol/summoner/v4/summoners/",
     "by_name" : "by-name/",

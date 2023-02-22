@@ -1424,8 +1424,8 @@ try:
       ) as connection:
             print(f"Connection {connection}")
             "Determine here which functions to use and populate the database with, champion and items must always be loaded and uploaded to SQL"
-            naServer.insert_champions(connection,champion)
-            naServer.insert_items(connection,items)
+            
+            naServer.get_winrate_champion(connection,"Aatox")
 
 except mysql.connector.Error as e:
         if e.errno == errorcode.ER_ACCESS_DENIED_ERROR:
