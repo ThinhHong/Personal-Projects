@@ -9,6 +9,7 @@ config["userID"] = {
     "username" : "root",
     "password" : "Pokemon25",
     "database" : "leagueoflegends",
+    "apiKey" : "YOURAPIKEY",
     "intialSummoner" : "https://{regionPlayer}.api.riotgames.com/lol/summoner/v4/summoners/",
     "by_name" : "by-name/",
     "by_account" : "by-account/",
@@ -31,6 +32,11 @@ config["userID"] = {
 
 
 with open("configlol.ini","w") as f:
+    """
+    Creates a configuration file ncaleld configlol.ini
+    Example usage:
+        >>> config = read_config('config.ini')
+    """
     config.write(f)
     
 
