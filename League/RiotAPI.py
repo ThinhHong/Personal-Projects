@@ -63,11 +63,11 @@ class RiotAPI:
       api_key : str
       A string representing the API key used to access Riot API.
       match_region : str
-      A string representing the region of the match (e.g., "na", "euw").
+      A string representing the region of the match (e.g., "americas", "europe").
       player_region : str
       A string representing the region of the player (e.g., "na", "euw").
       queue_type : str
-      A string representing the type of queue (e.g., "RANKED_SOLO_5x5",
+      A string representing the type of queue (e.g., "RANKED_SOLO_5x5",)
       """ 
       def __init__(self,api_key,region_match = "americas",region_player = "na1",queue = "RANKED_SOLO_5x5") -> None:
             """
@@ -184,7 +184,7 @@ class RiotAPI:
       @staticmethod
       def insert_query(connection,data,table,rollback_on_error=True):
             """
-            Inserts the provided query into an SQL table using the MySQL library.
+            Inserts the provided query into an SQL table using the MySQL library. Function requires all values in dictonary to be needed in table
 
             Parameters:
             connection: MySQL connection
@@ -196,25 +196,26 @@ class RiotAPI:
             table : str
             A string representing the name of the table into which the data will be inserted.
 
-            Returns:
-            -------
-            None
+            Returns:None
             
             Error
             If there is an error connecting to the MySQL server or executing the query.
             """
             values = ""
             for item in data.values():
+                  "Creates a long string with all values of dictionary into 1 string seperated by comma"
                   if isinstance(item,str):
                         values = f'{values}"{item}",'
-                  elif isinstance(item,int): 
+                  elif isinstance(item,int):
+                        "Values over 221247483647 are not able to be proccsedd in sql and are converted to a string"
                         if item > 22147483647:
                               values = f'{values}"{str(item)}",'
                         else:
                               values = f'{values}{item},'
 
                   elif item == True:
-                         values = f'{values}"1",'
+                        "MySQL does not support boolean type. Values are changed into TINYINT in SQL. 1(True) or 0(False)"
+                        values = f'{values}"1",'
                               
                   elif item == False:
                          values = f'{values}"0",'
@@ -238,7 +239,7 @@ class RiotAPI:
       @classmethod
       def insert_query_list(cls,connection,data,table):
             """
-            Inserts a list of queries into a table by calling insert_query for every query in the list
+            Inserts a list of queries into a table by calling insert_query for every item in list
             """
             try:
                   if isinstance(data,list):
@@ -280,9 +281,8 @@ class RiotAPI:
             This function takes a list of stats
             
             Parameters:
-            - list
-            A list containing the stats of a champions
-  
+            - list : A list containing the stats of a champions
+   
             Returns:
             - A str object containing the stats of a champion.
             """
@@ -294,7 +294,7 @@ class RiotAPI:
       @classmethod
       def insert_champions(cls,connection,champions):
             """
-            Inserts all champions into SQl using the MySQL library.
+            Inserts all champions into SQl using the MySQL library. Extracts important information from champion JSON file.
             Parameters:
             connection: MySQL connection
             A connection to a User's Database
@@ -327,7 +327,7 @@ class RiotAPI:
       @staticmethod
       def insert_type(connection,champion_id,type):
             """
-            Inserts a champinos type into SQl using the MySQL library.
+            Inserts a champinos type into SQl table named type using the MySQL library.
             Parameters:
             connection: MySQL connection
             A connection to a User's Database
@@ -360,7 +360,7 @@ class RiotAPI:
       @staticmethod
       def get_items():
             """Description:
-            This function utilizes the library request to send an HTTP GET request to Data Dragon containing all current items and returns the response in JSON format.
+            This function utilizes the library request to send an HTTP GET request to Data Dragon containing all current items and returns the response in JSON format converted to dictionary.
             
             Parameters:
             - None    
@@ -376,7 +376,7 @@ class RiotAPI:
       @staticmethod
       def insert_items(connection,items):
             """
-            Inserts all champions into SQl using the MySQL library.
+            Inserts all items into SQl table items using the MySQL library.
             Parameters:
             connection: MySQL connection
             A connection to a User's Database
@@ -396,6 +396,7 @@ class RiotAPI:
                   with connection.cursor() as cursor:
                         for item, key in data.items():
                               if len(key["name"]) < 30:
+                                    "Values"
                                     values = f'({item},"{key["name"]}")'
                                     query = f"INSERT INTO items {columns} VALUES {values}"
                                     print(query)
@@ -478,7 +479,7 @@ class RiotAPI:
             
       @staticmethod
       def num_roman(num):
-            "Converts and integer into a roman numeral using a dictionary"
+            "Converts an integer into a roman numeral using a dictionary"
             roman = {1:'I',2:'II',3:'III',4:'IV'}
             return roman[num]
 
@@ -505,7 +506,7 @@ class RiotAPI:
 
       def get_rank(self,tier,division):
             """Description:
-            This function utilizes the library request to send an HTTP GET request to a specified API endpoint containing all users using the requests library and returns the response in JSON format.
+            This function utilizes the library request to send an HTTP GET request to a specified API endpoint containing all users in a tier and division using the requests library and returns the response in JSON format.
             It combines various strings componets of RiotsAPI html such as the query, player and YOURAPIKEY
             Parameters:
             - tier : str
@@ -585,26 +586,27 @@ class RiotAPI:
             Returns:
             None
             """
-            for item in data:
-                  values = ""
-                  player = self.get_summoner_info_id(item['summonerId'])
-                  self.insert_query_user(connection,player)
-                  for key,value in item.items():
-                        if value == True:
-                              item[key] = 1
-                        elif value == False:
-                              item[key] = 0
-                  
-                  values = f"'{item['leagueId']}','{item['queueType']}','{item['tier']}','{item['rank']}','{player['id']}','{player['accountId']}','{player['puuid']}','{player['name']}',{item['leaguePoints']},{item['wins']},{item['losses']},{item['veteran']},{item['inactive']},{item['freshBlood']},{item['hotStreak']},"
-                  values = f"({values[:-1]})"
-                  query = f"INSERT INTO ranked VALUES {values}"
-                  print(query)
-                  try:
-                        with connection.cursor() as cursor:
-                              cursor.execute(query)
-                              connection.commit()
-                  except Error as e:
-                        print(f"Error: {e}")  
+           
+            try:
+                  with connection.cursor() as cursor:
+                        for item in data:
+                              values = ""
+                              player = self.get_summoner_info_id(item['summonerId'])
+                              self.insert_query_user(connection,player)
+                              for key,value in item.items():
+                                    if value == True:
+                                          item[key] = 1
+                                    elif value == False:
+                                          item[key] = 0
+                              
+                              values = f"'{item['leagueId']}','{item['queueType']}','{item['tier']}','{item['rank']}','{player['id']}','{player['accountId']}','{player['puuid']}','{player['name']}',{item['leaguePoints']},{item['wins']},{item['losses']},{item['veteran']},{item['inactive']},{item['freshBlood']},{item['hotStreak']},"
+                              values = f"({values[:-1]})"
+                              query = f"INSERT INTO ranked VALUES {values}"
+                              print(query)
+                        cursor.execute(query)
+                        connection.commit()
+            except Error as e:
+                  print(f"Error: {e}")  
              
       def insert_high_rank(self,connection,data):
             """Description:
@@ -693,7 +695,7 @@ class RiotAPI:
       @staticmethod
       def insert_match_history(connection,user,match_history):
             """Description:
-            Inserts match history information into an SQL database named match_history by calling insert_match_history_data using MySQL connector
+            Inserts match history information into an SQL database named match_history using MySQL connector
             Parameters:
              - connection: MySQL connection
             A connection to a User's Database
@@ -707,8 +709,9 @@ class RiotAPI:
             try:
                   with connection.cursor() as cursor:
                         for item in match_history:
+            
                               values = f"('{item}','{user['id']}','{user['accountId']}','{user['puuid']}','{user['name']}')"
-                              query = f"INSERT INTO match_history VALUES {values}"
+                              query = f"INSERT IGNORE INTO match_history VALUES {values}"
                               print(query)
                               cursor.execute(query)
                               connection.commit()
@@ -719,12 +722,12 @@ class RiotAPI:
       
       def insert_match_history_data(connection,id,account_id,puuid,name,match_history):
             """Description:
-            Inserts match history information into an SQL database named match using MySQL connector
+            Inserts match history information into an SQL database named match using MySQL connector based on a User's information. This function works without requesting a user
             Parameters:
              - connection: MySQL connection
             A connection to a User's Database
-             - user : dictionary
-            A  User's id,account id, puuid and name to identify a a user's match history
+             - user : id,account_id,puuid and name
+            Four parameters representing a user's information
              - match_history : list
             A list of matches from a user
             Return
@@ -734,7 +737,7 @@ class RiotAPI:
                   with connection.cursor() as cursor:
                         for item in match_history:
                               values = f"('{item}','{id}','{account_id}','{puuid}','{name}')"
-                              query = f"INSERT INTO match_history VALUES {values}"
+                              query = f"INSERT IGNORE INTO match_history VALUES {values}"
                               print(query)
                               cursor.execute(query)
                               connection.commit()
@@ -789,7 +792,7 @@ class RiotAPI:
             {participant['totalMinionsKilled']},{participant['turretTakedowns']},{participant['win']}
             """
             values = f"({values})"
-            query = f"INSERT INTO participant VALUES {values}"
+            query = f"INSERT IGNORE INTO participant VALUES {values}"
             print(query)
             try:
                   with connection.cursor() as cursor:
@@ -1346,7 +1349,41 @@ class RiotAPI:
                         print(df.head(5))
                         print(df.describe())
 
-def analyze(connection,query):
+def analyze_champion(connection,query):
+      """
+      Retrieve data from a MySQL database, convert it to a Pandas dataframe, and plots win rate using Plotly. The query determines what the win rate is based off
+      Plots with rate depending on combination of champion, rank and player
+      Parameter 
+      query (str): The SQL query to execute to retrieve data from the database.
+
+      Returns:
+        fig: A Plotly scatter plot with labeled axes from champion.
+
+      Raises:
+         mysql.connector.Error: If there is an error connecting to or querying the database.
+
+      'SELECT * FROM participants
+    """
+      try:
+            with connection.cursor(buffered=True) as cursor:
+                        print(f"Excuting: {query}")
+                        cursor.execute(query)
+                        column_names = [i[0] for i in cursor.description] 
+                        df = pd.DataFrame(cursor.fetchall(), columns = column_names)
+                        df_winrate = df.groupby(['champion_name']).sum('win').sort_values('champion_name')
+                        df_winrate['total_games'] = df.groupby(['champion_name']).count().sort_values('champion_name')['win']
+                        df_winrate['winrate'] = df_winrate['win']/df_winrate['total_games']
+                        df_winrate['champion_name'] = df_winrate.index.tolist()
+                        fig = px.scatter(df_winrate, x="champion_name", y="winrate", text="champion_name", log_x=False, size_max= 1)
+                        fig.update_traces(textposition='top center')
+                        fig.update_layout(title_text='Win rate by champion', title_x=0.5)
+                        fig.show()
+                        return fig    
+
+      except Exception as e:
+            print(f"Error: {e}")
+
+def analyze_item(connection,query,item):
       """
       Retrieve data from a MySQL database, convert it to a Pandas dataframe, and plots win rate using Plotly. The query determines what the win rate is based off
       Plots with rate depending on combination of champion, rank and player
@@ -1413,8 +1450,7 @@ def sql_csv(connection,query,name_csv,index=False):
         raise err
 
 naServer = RiotAPI(api_key,"americas","na1")
-champion = naServer.get_champion()
-items = naServer.get_items
+
 try:
       with connect(
             host= my_host,
@@ -1424,8 +1460,7 @@ try:
       ) as connection:
             print(f"Connection {connection}")
             "Determine here which functions to use and populate the database with, champion and items must always be loaded and uploaded to SQL"
-            
-            naServer.get_winrate_champion(connection,"Aatox")
+            sql_csv(connection,"SELECT * FROM items","lolitems")
 
 except mysql.connector.Error as e:
         if e.errno == errorcode.ER_ACCESS_DENIED_ERROR:
