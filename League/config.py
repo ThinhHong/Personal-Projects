@@ -5,6 +5,7 @@ config = configparser.ConfigParser()
 
 config["userID"] = {
     "startDate" : datetime.today().strftime('%Y-%m-%d'),
+    "host" : "localhost",
     "username" : "YOURUSERNAME",
     "password" : "YOURPASSWORD",
     "database" : "YOURDATABASE",
@@ -37,6 +38,6 @@ with open("configlol.ini","w") as f:
         >>> config = read_config('config.ini')
     """
     config.write(f)
-
+    query = "SELECT * FROM participant INNER JOIN ranked ON participant.id = ranked.id"
 
 

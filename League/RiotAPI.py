@@ -742,7 +742,7 @@ class RiotAPI:
                   raise
 
       def insert_match_list(self,connection,match_history):
-            "Inserts a list of match details by calling the function insert_match"
+            "Inserts a list of match details by calling the function insert_match, can be used to insert a players match history"
             for match_id in match_history:
                   match = self.get_match(match_id)
                   self.insert_match(connection,match)
@@ -898,7 +898,7 @@ class RiotAPI:
       
       def insert_match (self,connection,match,rollback_on_error=False):
             """Description:
-            Inserts a participate from a match into  SQL database named match_details using MySQL connector
+            Inserts a match and participate from a match into SQL database named match_details using MySQL connector
             Parameters:
             A connection to a User's Database
              - match : dictionary
@@ -936,12 +936,60 @@ class RiotAPI:
                         connection.rollback()      
                   raise
 
+      def insert_match_rank(self,connection,match,rollback_on_error=False):
+            """Description:
+            Function is similar to insert_match with the addition of inserting a player's rank as well
+            Parameters:
+            A connection to a User's Database
+             - match : dictionary
+            A dictionary representing a match details 
+            Return
+            None
+            """ 
+            data = match['metadata']
+            values = f"'{data['matchId']}','{data['dataVersion']}'"
+            info = match['info']
+            values = f"{values},{info['gameDuration']},'{info['gameId']}','{info['gameMode']}','{info['gameVersion']}',{info['mapId']},'{self.region_match}'"
+            values = f"({values})"
+            query = f"INSERT  INTO game VALUES {values}"
+            try:
+
+                  with connection.cursor() as cursor:
+                        print(query)
+                        cursor.execute(query)
+                        connection.commit()
+                        for user in data['participants']:
+                              player_query = f"SELECT EXISTS(SELECT * FROM player WHERE player.puuid = '{user}')"
+                              cursor.execute(player_query)
+                              exist = cursor.fetchone()[0]
+                              "If user is not in database, they are added in. Else their information is not required to get, Values changed to represent boolean"
+                              if exist == 0:
+                                    player = self.get_summoner_info_puuid(user)
+                                    self.insert_query_user(connection,player)
+
+                              rank_query = f"SELECT EXISTS(SELECT * FROM ranked WHERE ranked.puuid = '{user}')"
+                              cursor.execute(rank_query)
+                              exist = cursor.fetchone()[0]
+                              "If user is not in database, they are added in. Else their information is not required to get, Values changed to represent boolean"
+                              if exist == 0:
+                                    player = self.get_summoner_info_puuid(user)
+                                    self.insert_query_user(connection,player)
+                           
+                        for participant in info['participants']:
+                              self.insert_participate(connection,participant,data['matchId'])
+   
+            except Error as e:
+                  print(f"Error has occured: {e}")
+                  if rollback_on_error:
+                        connection.rollback()      
+                  raise
+
       def insert_rank_history_sql(self,connection,tier,division,start=0,count=20):
             """Description:
             Retrieves and inserts all of a tier and division's players match_history and participate data into SQL database using MySQL connector to retrieve a rank's data
             Since the same players can be in different matches, the function checks if the user is already in the database. A match can also have people have different ranks
-            so this function ensures any player not added in by insert_rank, is added here. Users can have the match in their match history as well. Therefore it is needed to check
-            if a match is already inserted
+            so this function ensures any player not added in by insert_rank, is added here. Users can have the same match in their match history as well. Therefore it is needed to check
+            if a match is already inserted.
             Uses get_summoner_info, insert_query_user,get_match_history_puuid,get_match and insert_match
             Parameters:
              - connection: MySQL connection
@@ -1494,7 +1542,7 @@ class RiotAPI:
                         print(df.head(5))
                         print(df.describe())
 
-def analyze_champion(connection,query):
+def analyze_champion_winrate(connection,query):
       """
       Retrieve data from a MySQL database, convert it to a Pandas dataframe, and plots win rate using Plotly. The query determines what the win rate is based off
       Plots with rate depending on combination of champion, rank and player
@@ -1528,7 +1576,7 @@ def analyze_champion(connection,query):
       except Exception as e:
             print(f"Error: {e}")
 
-def analyze_item(connection,query,item):
+def analyze_champion_playrate(connection,query):
       """
       Retrieve data from a MySQL database, convert it to a Pandas dataframe, and plots win rate using Plotly. The query determines what the win rate is based off
       Plots with rate depending on combination of champion, rank and player
@@ -1545,19 +1593,66 @@ def analyze_item(connection,query,item):
     """
       try:
             with connection.cursor(buffered=True) as cursor:
-                        print(f"Excuting: {query}")
-                        cursor.execute(query)
-                        column_names = [i[0] for i in cursor.description] 
-                        df = pd.DataFrame(cursor.fetchall(), columns = column_names)
-                        df_winrate = df.groupby(['champion_name']).sum('win').sort_values('champion_name')
-                        df_winrate['total_games'] = df.groupby(['champion_name']).count().sort_values('champion_name')['win']
-                        df_winrate['winrate'] = df_winrate['win']/df_winrate['total_games']
-                        df_winrate['champion_name'] = df_winrate.index.tolist()
-                        fig = px.scatter(df_winrate, x="champion_name", y="winrate", text="champion_name", log_x=False, size_max= 1)
-                        fig.update_traces(textposition='top center')
-                        fig.update_layout(title_text='Win rate by champion', title_x=0.5)
-                        fig.show()
-                        return fig    
+                  print(f"Excuting: {query}")
+                  cursor.execute(query)
+                  column_names = [i[0] for i in cursor.description] 
+                  df = pd.DataFrame(cursor.fetchall(), columns = column_names)
+                  df_playrate = df.groupby(['champion_name']).sum().sort_values('champion_name')
+                  df_playrate['times_played'] = df['champion_name'].value_counts()
+                  amount_matches = len(df['match_id'].unique())
+                  df_playrate['play_rate'] = df_playrate['times_played']/amount_matches
+                  df_playrate['champion_name'] = df_playrate.index.tolist()
+                  fig = px.scatter(df_playrate, x="champion_name", y="play_rate", text="champion_name", log_x=False, size_max= 1)
+                  fig.update_traces(textposition='top center')
+                  fig.update_layout(title_text='Play rate by champion', title_x=0.5)
+                  fig.show()
+
+                  return fig    
+
+      except Exception as e:
+            print(f"Error: {e}")
+
+def analyze_item_purchase_rate(connection,query):
+      """
+      Retrieve data from a MySQL database, convert it to a Pandas dataframe, and plots win rate using Plotly. The query determines what the win rate is based off
+      Plots with rate depending on combination of champion, rank and player
+      Parameter 
+      query (str): The SQL query to execute to retrieve data from the database.
+
+      Returns:
+        fig: A Plotly scatter plot with labeled axes from champion.
+
+      Raises:
+         mysql.connector.Error: If there is an error connecting to or querying the database.
+
+      'SELECT * FROM participants
+    """
+      try:
+            with connection.cursor(buffered=True) as cursor:
+                  print(f"Excuting: {query}")
+                  cursor.execute(query)
+                  column_names = [i[0] for i in cursor.description] 
+                  df = pd.DataFrame(cursor.fetchall(), columns = column_names)
+                  item_query = "SELECT * FROM items"
+                  cursor.execute(item_query)
+                  column_names = [i[0] for i in cursor.description] 
+                  df_item = pd.DataFrame(cursor.fetchall(), columns = column_names)
+                  df_item['count'] = 0
+                  items = df_item[['item_name','count']].to_numpy()
+                  item_bought = df[['item0_name','item1_name','item2_name','item3_name','item4_name','item5_name','item6_name']].to_numpy()
+                  for i in range(len(item_bought[0])):    
+                        for j in range(len(item_bought)):
+                              item = item_bought[j][i]
+                              if item != "No item":
+                                    item_index = np.where(items == item)
+                                    items[(item_index[0][0])][1] += 1
+                  df_item_count = pd.DataFrame(items, columns = ['item_name','amount_bought']) 
+                  amount_matches = len(df['match_id'].unique())
+                  df_item_count['purchase_rate'] = df_item_count['amount_bought']/amount_matches
+                  fig = px.scatter(df_item_count, x="item_name", y="purchase_rate", text="item_name", log_x=False, size_max= 1)
+                  fig.update_traces(textposition='top center')
+                  fig.update_layout(title_text='Purchase rate', title_x=0.5)
+                  fig.show()
 
       except Exception as e:
             print(f"Error: {e}")
@@ -1594,8 +1689,10 @@ def sql_csv(connection,query,name_csv,index=False):
       except OSError as err:
         raise err
 
-naServer = RiotAPI(api_key,"americas","na1")
 que = "SELECT * FROM participant INNER JOIN ranked ON participant.id = ranked.id"
+que2 = "SELECT * FROM participant"
+que3 = "SELECT * FROM items"
+champ_que = "SELECT * FROM champion"
 """
 champ = naServer.get_champion()
 item = naServer.get_items()
@@ -1615,7 +1712,7 @@ try:
             naServer.insert_champions(connection,champ)
             naServer.insert_items(connection,item)
             """
-            sql_csv(connection,que,"challenger")
+            analyze_item_purchase_rate(connection,que2,)
             
 except mysql.connector.Error as e:
         if e.errno == errorcode.ER_ACCESS_DENIED_ERROR:
