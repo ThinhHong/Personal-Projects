@@ -64,7 +64,6 @@ division =["I","II","III","IV"]
 class RiotAPI:
       """
       A class that represents the Riot API and its parameters.
-    
       Parameters:
       api_key : str
       A string representing the API key used to access Riot API.
@@ -75,10 +74,9 @@ class RiotAPI:
       queue_type : str
       A string representing the type of queue (e.g., "RANKED_SOLO_5x5",)
       """ 
-      def __init__(self,api_key : str,region_match = "americas" ,region_player = "na1",queue = "RANKED_SOLO_5x5") -> None:
+      def __init__(self,api_key : str,region_match : str = "americas" ,region_player : str = "na1",queue = "RANKED_SOLO_5x5") -> None:
             """
             Initializes a new RiotAPI instance with the provided parameters.
-
             Parameters:
             api_key : str
             A string representing a personal API key used to access Riot API represented as YOURAPIKEY.
@@ -89,7 +87,6 @@ class RiotAPI:
             queue_type : str
             A string representing the type of queue that is one of the following ("RANKED_SOLO_5x5","RANKED_FLEX_SR","RANKED_FLEX_TT"]).
             """
-            
             self.api_key = api_key
             self.region_match = region_match
             self.region_player = region_player
@@ -102,10 +99,7 @@ class RiotAPI:
             It combines various strings componets of RiotsAPI html such as the summoner and query string determined by RIOT with a user's id and YOURAPIKEY
             Parameters:
             - id (str): A string representing the a User's summoner id to create an API endpoint to send the request to.
-            
-            Returns:
-            - A JSON object containing the response data that is converted into a dictionary.
-
+            Returns: A JSON object containing the response data that is converted into a dictionary.
             Example Usage:
             response = request.get('https://na1.api.riotgames.com/lol/summoner/v4/summoners/JBKCGB6vOqJuflnawS2PNM7rupJh15Q5TWACOj8okHpQKws?api_key=YOURAPIKEY')
             """
@@ -114,7 +108,6 @@ class RiotAPI:
                   http = (summoner + id + query + self.api_key).format(
                         regionPlayer=self.region_player
                   )
-
                   return requests.get(http).json()
             
             except Exception as e:
@@ -126,32 +119,25 @@ class RiotAPI:
             It combines various strings componets of RiotsAPI html such as the summoner and query string determined by RIOT with a user's account id and YOURAPIKEY
             Parameters:
             - account_ad (str): A string representing the a User's account_id to create an API endpoint to send the request to.
-            
-            Returns:
-            - A JSON object containing the response data that is then converted into a dictonary.
-
+            Returns: A JSON object containing the response data that is then converted into a dictonary.
             """
             time.sleep(1.5)
             try:
                   http = (summoner + by_account + account_id + query + self.api_key).format(
                         regionPlayer=self.region_player
                   )
-
                   return requests.get(http).json()
             
             except Exception as e:
                   print(f'Could not make request {e}')
 
-      def get_summoner_info_puuid(self,puuid):
+      def get_summoner_info_puuid(self,puuid : str) -> dict:
             """Description:
             This function utilizes the library request to send an HTTP GET request to a specified API endpoint containing a User's info  using the requests library and returns the response in JSON format.
             It combines various strings componets of RiotsAPI html such as the summoner and query string determined by RIOT with a user's puuid id and YOURAPIKEY
-
             Parameters:
             - puuid (str): A string representing the a User's account_id to create an API endpoint to send the request to.
-            
-            Returns:
-            - A JSON object containing the response data that is then converted into a dictonary.
+            Returns: A JSON object containing the response data that is then converted into a dictonary.
             """
             time.sleep(1.5)
             try:
@@ -163,16 +149,13 @@ class RiotAPI:
             except Exception as e:
                   print(f'Could not make request {e}')
    
-
-      def get_summoner_info_name(self,summoner_name):
+      def get_summoner_info_name(self,summoner_name: str) -> dict:
             """Description:
             This function utilizes the library request to send an HTTP GET request to a specified API endpoint containing a User's info  using the requests library and returns the response in JSON format.
             It combines various strings componets of RiotsAPI html such as the summoner and query string determined by RIOT with a user's name and YOURAPIKEY
             Parameters:
-            - name (str): A string representing the a User's account_id to create an API endpoint to send the request to.
-            
-            Returns:
-            - A JSON object containing the response data that is then converted into a dictonary.
+            name: A string representing the a User's account_id to create an API endpoint to send the request to.
+            Returns:A JSON object containing the response data that is then converted into a dictonary.
             """
             time.sleep(1.5)
             try:
@@ -185,10 +168,9 @@ class RiotAPI:
                   print(f'Could not make request {e}')
       
       @staticmethod
-      def insert_query(connection,data,table,rollback_on_error=False):
+      def insert_query(connection : connect,data : dict,table_name : str,rollback_on_error=False) -> None:
             """
             Inserts the provided query into an SQL table using the MySQL library. Function requires all values in dictonary to be needed in table
-
             Parameters:
             connection: MySQL connection
             A connection to a User's Database
@@ -198,11 +180,8 @@ class RiotAPI:
             A dictionary containing the data to be insertered. Integer values over 22147483647 are converted to strings as MySQL can not handle large intergers.
             table : str
             A string representing the name of the table into which the data will be inserted.
-
-            Returns:None
-            
-            Error
-            If there is an error connecting to the MySQL server or executing the query.
+            Returns: None
+            Errors: If there is an error connecting to the MySQL server or executing the query.
             """
             values = ""
             for item in data.values():
@@ -219,13 +198,11 @@ class RiotAPI:
                   elif item == True:
                         "MySQL does not support boolean type. Values are changed into TINYINT in SQL. 1(True) or 0(False)"
                         values = f'{values}"1",'
-                              
                   elif item == False:
                          values = f'{values}"0",'
 
             values = f"({values[:-1]})"
-            query = f"INSERT INTO {table} VALUES {values}"
-
+            query = f"INSERT INTO {table_name} VALUES {values}"
             try:
                   with connection.cursor() as cursor:
                         print(query)
@@ -239,40 +216,33 @@ class RiotAPI:
                         connection.rollback()      
                   raise      
 
-            
-            
-      @classmethod
-      def insert_query_list(cls,connection,data,table):
+      def insert_query_list(self,connection : connect,data : dict,table_name : str) -> None:
             """
             Inserts a list of queries into a table by calling insert_query for every item in list
             """
             try:
                   if isinstance(data,list):
                         for item in data:
-                              cls.insert_query(connection,item,table)
-
+                              self.insert_query(connection,item,table_name)
                   else:
-                        cls.insert_query(connection,data,table)
+                        self.insert_query(connection,data,table_name)
+
             except Error as e:
                   print(f"Error: {e}")
                  
-      @classmethod
-      def insert_query_user(cls,connection,data):
+      def insert_query_user(self,connection : connect,data: dict) -> None:
             """
-            Inserts a user into table player by calling insert_query with table set to player
+            Inserts a user into table player by calling insert_query with table set to player. Gets player rank and inserts into table ranked
             """       
-            cls.insert_query(connection,data,"player")
-
-     
+            self.insert_query(connection,data,"player")
+   
       @staticmethod
-      def get_champion():
+      def get_champion() -> dict:
             """Description:
             This function utilizes the library request to send an HTTP GET request to Data Dragon containing all current champions and returns the response in JSON format.
-            
             Parameters:
             - None    
-            Returns:
-            - A JSON object containing the response data that is then converted into a dictonary.
+            Returns: A JSON object containing the response data that is then converted into a dictonary.
             """
             try:
                   return requests.get(champions).json()
@@ -281,15 +251,12 @@ class RiotAPI:
                   print(f'Could not get values {e}')
 
       @staticmethod
-      def get_stats(list):
+      def get_stats(list : list) -> None:
             """Description:
             This function takes a list of stats
-            
             Parameters:
             - list : A list containing the stats of a champions
-   
-            Returns:
-            - A str object containing the stats of a champion.
+            Returns: A str object containing the stats of a champion.
             """
             stats = ""
             for item in list.values():
@@ -297,21 +264,14 @@ class RiotAPI:
             return stats[1:]
       
       @classmethod
-      def insert_champions(cls,connection,champions):
+      def insert_champions(cls,connection : connect,champions : dict) -> None:
             """
             Inserts all champions into SQl using the MySQL library. Extracts important information from champion JSON file.
-            Parameters:
-            connection: MySQL connection
-            A connection to a User's Database
-            champions: dictionary
-            A dictionary containing the all champions to be insertered. Integer values over 22147483647 are converted to strings as MySQL can not handle large intergers.
- 
-            Returns:
-            -------
-            None
-      
-            Error
-            If there is an error connecting to the MySQL server or executing the query.
+            Parameters 
+            connection: MySQL connection to a User's Database
+            champions: a dictionary containing the all champions to be insertered. Integer values over 22147483647 are converted to strings as MySQL can not handle large intergers.
+            Returns: None
+            Error : If there is an error connecting to the MySQL server or executing the query.
             """
             version = champions["version"]
             data = champions['data']
@@ -330,23 +290,15 @@ class RiotAPI:
                   print(f"Error: {e}")
 
       @staticmethod
-      def insert_type(connection,champion_id,type):
+      def insert_type(connection : connect,champion_id : int,type : str) -> None:
             """
             Inserts a champinos type into SQl table named type using the MySQL library.
-            Parameters:
-            connection: MySQL connection
-            A connection to a User's Database
-            champion_id : int
-            A integer representing a champion
-            type: list
-            A list containing all of a champion's type
- 
-            Returns:
-            -------
-            None
-      
-            Error
-            If there is an error connecting to the MySQL server or executing the query.
+            Parameters
+            connection: MySQL connection  A connection to a User's Database
+            champion_id : int  A integer representing a champion
+            type: list  A list containing all of a champion's type
+            Returns: None
+            Error If there is an error connecting to the MySQL server or executing the query.
             """
             columns ="(tags,champion_id)"
             try:
@@ -363,14 +315,11 @@ class RiotAPI:
                   print(f"Error: {e}")
 
       @staticmethod
-      def get_items():
+      def get_items() -> dict:
             """Description:
             This function utilizes the library request to send an HTTP GET request to Data Dragon containing all current items and returns the response in JSON format converted to dictionary.
-            
-            Parameters:
-            - None    
-            Returns:
-            - A JSON object containing the response data that is then converted into a dictonary.
+            Parameters: None    
+            Returns: A JSON object containing the response data that is then converted into a dictonary.
             """
             try:
                   return requests.get(items).json()
@@ -379,21 +328,14 @@ class RiotAPI:
                   print(f'Could not get values {e}')
 
       @staticmethod
-      def insert_items(connection,items):
+      def insert_items(connection : connect,items : dict) -> None:
             """
             Inserts all items into SQl table items using the MySQL library.
-            Parameters:
-            connection: MySQL connection
-            A connection to a User's Database
-            items: dictionary
-            A dictionary containing the all items to be insertered. Strings containing more than 30 charecters are not inserted as they are not items
- 
-            Returns:
-            -------
-            None
-      
-            Error
-            If there is an error connecting to the MySQL server or executing the query.
+            Parameters
+            connection: MySQL connection to a User's Database
+            items: dictionary containing the all items to be insertered. Strings containing more than 30 charecters are not inserted as they are not items
+            Returns: None
+            Error: If there is an error connecting to the MySQL server or executing the query.
             """
             columns = f"(item_id,item_name)"
             data = items['data']
@@ -412,15 +354,13 @@ class RiotAPI:
                   print(f'Could not insert query {e}')
                   
       
-      def get_mastery(self,player):
+      def get_mastery(self,player : dict) -> dict:
             """Description:
             This function utilizes the library request to send an HTTP GET request to a specified API endpoint containing a User's complete champion mastery using the requests library and returns the response in JSON format.
             It combines various strings componets of RiotsAPI html such as the summoner and YOURAPIKEY
             Parameters:
-            - player : dictionary
-            A dictionary containing all of a User's info the a User's info
-            Returns:
-            - A JSON object containing the response data that is then converted into a dictonary..
+            - player : A dictionary containing all of a User's info 
+            Returns: A JSON object containing the response data that is then converted into a dictonary..
             """
             time.sleep(1.5)
             try:
@@ -433,17 +373,14 @@ class RiotAPI:
                   print(f'Could not make request {e}')
                   
 
-      def get_mastery_champ(self,player,champ_id):
+      def get_mastery_champ(self,player : dict,champ_id : int) -> dict:
             """Description:
             This function utilizes the library request to send an HTTP GET request to a specified API endpoint containing a User's specific champion mastery using the requests library and returns the response in JSON format.
             It combines various strings componets of RiotsAPI html such as the summoner, champ_id, query and YOURAPIKEY
             Parameters:
-            - player : dictionary
-            A dictionary containing all of a User's info the a User's info
-            - champ_id : int
-            A champions specific id
-            Returns:
-            - A JSON object containing the response data that is then converted into a dictonary..
+            - player : A dictionary containing all of a User's info 
+            - champ_id : int champions specific id
+            Returns: A JSON object containing the response data that is then converted into a dictonary..
             """
             time.sleep(1.5)
             try:
@@ -457,7 +394,7 @@ class RiotAPI:
 
 
       @classmethod
-      def insert_mastery(cls,connection,data):
+      def insert_mastery(cls,connection : connect,data : dict) -> None:
             """
             Inserts a user's mastery into SQl using the MySQL library.
             Parameters:
@@ -476,52 +413,58 @@ class RiotAPI:
             
 
       @classmethod
-      def insert_all_mastery(cls,connection,data):
+      def insert_all_mastery(cls,connection :connect,data : dict) -> None:
             "Inserts A user's complete mastery page into an SQL table"
             cls.insert_query_list(connection,data,"mastery")
             
       @staticmethod
-      def num_roman(num):
+      def num_roman(num : int)-> str:
             "Converts an integer into a roman numeral using a dictionary"
             roman = {1:'I',2:'II',3:'III',4:'IV'}
             return roman[num]
 
 
-      def get_player_rank(self,player):
+      def get_player_rank(self,player : dict) -> dict:
             """Description:
             This function utilizes the library request to send an HTTP GET request to a specified API endpoint containing a User's rank using the requests library and returns the response in JSON format.
             It combines various strings componets of RiotsAPI html such as the query, player and YOURAPIKEY
             Parameters:
-            - player : dictionary
-            A dictionary containing all of a User's info the a User's info
-            Returns:
-            - A JSON object containing the response data that is then converted into a dictonary..
+            - player : dictionary containing all of a User's info the a User's info
+            Returns: A JSON object containing the response data that is then converted into a dictonary..
             """
             time.sleep(1.5)
             http = (rank + by_summoner + player['id'] + query + self.api_key).format(
-                  regionPlayer=self.region_player)
-            
+                  regionPlayer=self.region_player
+                  )         
             try:
                   return requests.get(http).json()
             except Exception as e:
                   print(f'Could not make request {e}')
 
-      def get_rank(self,tier,division):
+      def get_player_rank_id(self,id : str) -> dict:
+            """Description:
+            Function is similar to get_player_rank excecpt it only requires a player's id
+            """
+            time.sleep(1.5)
+            http = (rank + by_summoner + id + query + self.api_key).format(
+                  regionPlayer=self.region_player
+                  )         
+            try:
+                  return requests.get(http).json()
+            except Exception as e:
+                  print(f'Could not make request {e}')
+
+      def get_rank(self,tier : str,division : str) -> dict:
             """Description:
             This function utilizes the library request to send an HTTP GET request to a specified API endpoint containing all users in a tier and division using the requests library and returns the response in JSON format.
             It combines various strings componets of RiotsAPI html such as the query, player and YOURAPIKEY
             Parameters:
-            - tier : str
-            A str representing one of 6 tiers ("IRON","BRONZE","SILVER","GOLD","Platinium","DIAMOND")
-            - division : str 
-            A str representing one of 4 divisions ("I","II","III","IV")
-            Returns:
-            - A JSON object containing the response data that is then converted into a dictonary.
+            - tier : str representing one of 6 tiers ("IRON","BRONZE","SILVER","GOLD","Platinium","DIAMOND")
+            - division : str representing one of 4 divisions ("I","II","III","IV")
+            Returns: A JSON object containing the response data that is then converted into a dictonary.
             """
             time.sleep(1.5)
-            if isinstance(division,int):
-                  division = self.num_roman(division)
-            http = (rank +self.queue+'/' +tier +'/' + division+ query + self.api_key).format(
+            http = (rank +self.queue+'/' +tier +'/' + division + query + self.api_key).format(
                   regionPlayer=self.region_player
             )
             try:
@@ -529,12 +472,11 @@ class RiotAPI:
             except Exception as e:
                   print(f'Could not make request {e}')
 
-      def get_master(self):
+      def get_master(self) -> dict:
             """Description:
             This function utilizes the library request to send an HTTP GET request to a specified API endpoint containing all players in the rank master using the requests library and returns the response in JSON format.
             It combines various strings componets of RiotsAPI html such as the query, player and YOURAPIKEY
-            Returns:
-            - A JSON object containing the response data that is then converted into a dictonary.
+            Returns: A JSON object containing the response data that is then converted into a dictonary.
             """
             http = (players + master_players +self.queue+ query + self.api_key).format(
                   regionPlayer=self.region_player
@@ -544,12 +486,11 @@ class RiotAPI:
             except Exception as e:
                   print(f'Could not make request {e}')
 
-      def get_grandmaster(self):
+      def get_grandmaster(self)-> dict:
             """Description:
             This function utilizes the library request to send an HTTP GET request to a specified API endpoint containing all players in the rank grandmaster using the requests library and returns the response in JSON format.
             It combines various strings componets of RiotsAPI html such as the query, player and YOURAPIKEY
-            Returns:
-            - A JSON object containing the response data that is then converted into a dictonary.
+            Returns: A JSON object containing the response data that is then converted into a dictonary.
             """
             http = (players + grandmaster_players +self.queue+ query + self.api_key).format(
                   regionPlayer = self.region_player
@@ -559,13 +500,11 @@ class RiotAPI:
             except Exception as e:
                   print(f'Could not get values {e}')
 
-
-      def get_challenger(self):
+      def get_challenger(self)-> dict:
             """Description:
             This function utilizes the library request to send an HTTP GET request to a specified API endpoint containing all players in the rank challenger using the requests library and returns the response in JSON format.
             It combines various strings componets of RiotsAPI html such as the query, player and YOURAPIKEY
-            Returns:
-            - A JSON object containing the response data that is then converted into a dictonary.
+            Returns: A JSON object containing the response data that is then converted into a dictonary.
             """
             http = (players + challenger_players +self.queue+ query + self.api_key).format(
                   regionPlayer=self.region_player
@@ -574,70 +513,87 @@ class RiotAPI:
                   return requests.get(http).json()
             except Exception as e:
                   print(f'Could not get values {e}')
-       
-      
-      def insert_rank(self,connection,data,rollback_on_error=False):
+      def insert_rank(self,connection : connect,item : list,rollback_on_error=False) -> None:
             """Description:
-            Inserts a ranks information into an SQL database named ranked
-            Parameters:
-             - connection: MySQL connection
-            A connection to a User's Database
-             - data : dictionary
-            A dictionary containing a rank's and division's users ("IRON","BRONZE","SILVER","GOLD","Platinium","DIAMOND") tier, ("I","II","III","IV")
-            Returns:
-            None
+            Inserts a ranks information and all players in rank into an SQL database named ranked
+            Parameters
+            connection: MySQL connection to a User's Database
+            item : dictionary containing a rank's and division's users ("IRON","BRONZE","SILVER","GOLD","Platinium","DIAMOND") tier, ("I","II","III","IV")
+            Returns: None
             """
-           
-            try:
-                  with connection.cursor() as cursor:
-                        for item in data:
-                              for key,value in item.items():
-                                    if value == True:
-                                          item[key] = 1
-                                    elif value == False:
-                                          item[key] = 0
-                              "player_query is used to determine if user is already in database. "
-                              player_query = f"SELECT EXISTS(SELECT * FROM player WHERE player.id = '{item['summonerId']}')"
-                              cursor.execute(player_query)
-                              exist = cursor.fetchone()[0]
-                              "If user is not in database, they are added in. Else their information is not required to get, Values changed to represent boolean"
-                              values = ""
-                              if exist == 0:
-                                    player = self.get_summoner_info_id(item['summonerId'])
-                                    self.insert_query_user(connection,player)
-                                    values = f"'{item['leagueId']}','{item['queueType']}','{item['tier']}','{item['rank']}','{player['id']}','{player['accountId']}','{player['puuid']}','{player['name']}',{item['leaguePoints']},{item['wins']},{item['losses']},{item['veteran']},{item['inactive']},{item['freshBlood']},{item['hotStreak']},"
-                                    values = f"({values[:-1]})"
+            try:  
+                  with connection.cursor() as cursor:         
+                        for key,value in item.items():
+                              if value == True:
+                                    item[key] = 1
+                              elif value == False:
+                                    item[key] = 0
+                        "player_query is used to determine if user is already in database. "
+                        player_query = f"SELECT EXISTS(SELECT * FROM player WHERE player.id = '{item['summonerId']}')"
+                        cursor.execute(player_query)
+                        exist = cursor.fetchone()[0]
+                        "If user is not in database, they are added in. Else their information is not required to get, Values changed to represent boolean"
+                        values = ""
+                        if exist == 0:
+                              player = self.get_summoner_info_id(item['summonerId'])
+                              self.insert_query_user(connection,player)
+                              values = f"'{item['leagueId']}','{item['queueType']}','{item['tier']}','{item['rank']}','{player['id']}','{player['accountId']}','{player['puuid']}','{player['name']}',{item['leaguePoints']},{item['wins']},{item['losses']},{item['veteran']},{item['inactive']},{item['freshBlood']},{item['hotStreak']},"
+                              values = f"({values[:-1]})"
 
-                              else:
-                                    user_query = f"SELECT id,account_id,puuid,name FROM player WHERE player.id = '{item['summonerId']}'"
-                                    cursor.execute(user_query)
-                                    info = cursor.fetchone()
-                                    values = f"""'{item['leagueId']}','{item['queueType']}','{item['tier']}','{item['rank']}',"{info[0]}","{info[1]}","{info[2]}","{info[3]}",{item['leaguePoints']},{item['wins']},{item['losses']},{item['veteran']},{item['inactive']},{item['freshBlood']},{item['hotStreak']},"""
-                                    values = f"({values[:-1]})" 
+                        else:
+                              user_query = f"SELECT id,account_id,puuid,name FROM player WHERE player.id = '{item['summonerId']}'"
+                              cursor.execute(user_query)
+                              info = cursor.fetchone()
+                              values = f"""'{item['leagueId']}','{item['queueType']}','{item['tier']}','{item['rank']}',"{info[0]}","{info[1]}","{info[2]}","{info[3]}",{item['leaguePoints']},{item['wins']},{item['losses']},{item['veteran']},{item['inactive']},{item['freshBlood']},{item['hotStreak']},"""
+                              values = f"({values[:-1]})" 
 
-                              query = f"INSERT INTO ranked VALUES {values}"
-                              print(query)
-                              cursor.execute(query)
-                              if not rollback_on_error:
-                                    connection.commit()
+                        query = f"INSERT INTO ranked VALUES {values}"
+                        cursor.execute(query)
+
+                        if not rollback_on_error:
+                              connection.commit()
             except Error as e:
                   print(f"Error has occured: {e}")
                   if rollback_on_error:
                         connection.rollback()      
                   raise  
              
-            
-      def insert_high_rank(self,connection,data,rollback_on_error=False):
+      def insert_player_rank(self,connection:connect,data : list, rollback_on_error=False) -> None:
             """Description:
-            Inserts a ranks information into an SQL database named ranked. Similar to insert_rank function except high_ranks JSON files need to be processed differently
-            Checks if user exist database
+            Inserts a player's ranks information into an SQL database named ranked. Players can have a rank in Rank solo, rank flex, none or both. Data is obtained using get_rank
             Parameters:
-             - connection: MySQL connection
-            A connection to a User's Database
-             - data : dictionary
-            A dictionary containing a high rank's user high_tier =["MASTER","GRANDMASTER","CHALLENGER"]
-            Returns:
-            None
+             - connection: MySQL connection to a User's Database
+             - data : dictionary containing a rank's and division's users ("IRON","BRONZE","SILVER","GOLD","Platinium","DIAMOND") tier, ("I","II","III","IV")
+            Returns: None
+            """
+            if len(data) == 0:
+                  print("Player does not have a rank")
+                  return
+
+            print(type(data))                  
+            for rank in data:
+                  if rank['queueType'] == self.queue:
+                        self.insert_rank(connection,rank)
+
+      def insert_all_rank(self,connection:connect,data : list, rollback_on_error=False) -> None:
+            """Description:
+            Inserts a list of player's ranks information into an SQL database named ranked. This function can be used to insert all players in a rank using get_rank
+            Parameters:
+             - connection: MySQL connection to a User's Database
+             - data : dictionary containing a rank's and division's users ("IRON","BRONZE","SILVER","GOLD","Platinium","DIAMOND") tier, ("I","II","III","IV")
+            Returns: None
+            """
+            for item in data:
+                  self.insert_rank(connection,item)
+
+      def insert_high_rank(self,connection : connect,data : dict,rollback_on_error=False) -> None:
+            """Description:
+            Inserts a ranks information into an SQL database named ranked. Similar to insert_rank_list function except high_ranks JSON files need to be processed differently
+            Checks if user exist in database before inserting rank
+            Parameters:
+            connection: MySQL connection to a User's Database
+            data : dictionary containing a high rank's user high_tier =["MASTER","GRANDMASTER","CHALLENGER"]
+            Returns: None
             """
             values = f'''"{data['leagueId']}","{data['queue']}","{data['tier']}"'''
             print(values)
@@ -652,7 +608,6 @@ class RiotAPI:
                               player_query = f"SELECT EXISTS(SELECT * FROM player WHERE player.id = '{entry['summonerId']}')"
                               cursor.execute(player_query)
                               exist = cursor.fetchone()[0]
-                              print(exist)
                               if exist == 0:
                                     player = self.get_summoner_info_id(entry['summonerId'])
                                     self.insert_query_user(connection,player)
@@ -679,183 +634,17 @@ class RiotAPI:
                   if rollback_on_error:
                         connection.rollback()      
                   raise
+             
 
-
-      def get_match(self,match_id):
+      def insert_participant (self,connection : connect,participant : dict,match_id : str,rollback_on_error=False) -> None:
             """Description:
-            This function utilizes the library request to send an HTTP GET request to a specified API endpoint containing match data using the requests library and returns the response in JSON format.
-            It combines various strings componets of RiotsAPI html such as the summoner and query string determined by RIOT with match history, query and YOURAPIKEY
-            Parameters:
-            - match_ id(str): A string representing a match id to create an API endpoint to send the request to.
-            Returns:
-            - A JSON object containing the response data that is converted into a dictionary.
+            Inserts a participant from a match into  SQL database named match using MySQL connector
+            Parameters:connection: MySQL connection
+            A connection to a User's Database 
+            participant : dictionary dictionary representing a particpate's data such as their kill and assist
+            match_id : a str id represnting a match
+            Return: None
             """
-            time.sleep(1.5)
-       
-            http = (match + match_details + match_id + query + self.api_key).format(
-                  regionMatch=self.region_match
-            )
-
-            try:
-                  return requests.get(http).json()
-            except Exception as e:
-                  print(f'Could not make request {e}')
-
-      def insert_match (self,connection,match,rollback_on_error=False):
-            """Description:
-            Inserts a participate from a match into  SQL database named match_details using MySQL connector
-            Parameters:
-            A connection to a User's Database
-             - match : dictionary
-            A dictionary representing a match details 
-            Return
-            None
-            """ 
-            data = match['metadata']
-            values = f"'{data['matchId']}','{data['dataVersion']}'"
-            info = match['info']
-            values = f"{values},{info['gameDuration']},'{info['gameId']}','{info['gameMode']}','{info['gameVersion']}',{info['mapId']},'{self.region_match}'"
-            values = f"({values})"
-            query = f"INSERT INTO game VALUES {values}"
-            try:
-
-                  with connection.cursor() as cursor:
-                        print(query)
-                        cursor.execute(query)
-                        connection.commit()
-                        for user in data['participants']:
-                              player_query = f"SELECT EXISTS(SELECT * FROM player WHERE player.puuid = '{user}')"
-                              cursor.execute(player_query)
-                              exist = cursor.fetchone()[0]
-                              "If user is not in database, they are added in. Else their information is not required to get, Values changed to represent boolean"
-                              if exist == 0:
-                                    player = self.get_summoner_info_puuid(user)
-                                    self.insert_query_user(connection,player)
-                                    
-                        for participant in info['participants']:
-                              self.insert_participate(connection,participant,data['matchId'])
-                        
-            except Error as e:
-                  print(f"Error has occured: {e}")
-                  if rollback_on_error:
-                        connection.rollback()      
-                  raise
-
-      def insert_match_list(self,connection,match_history):
-            "Inserts a list of match details by calling the function insert_match, can be used to insert a players match history"
-            for match_id in match_history:
-                  match = self.get_match(match_id)
-                  self.insert_match(connection,match)
-
-
-      def get_match_history_player(self,player,start=0,count=20):
-            """Description:
-            This function utilizes the library request to send an HTTP GET request to a specified API endpoint containing a User's match history using the requests library and returns the response in JSON format.
-            It combines various strings componets of RiotsAPI html such as the summoner and query string determined by RIOT with a user's id and YOURAPIKEY
-            Parameters:
-            - id : dictionary
-            A dictionary containing a user's informatoin
-            - start : int default value = 0
-            A match history is based on most recent games played in descending order. Start indicates when to start the list by counting after how many games it is
-            - count : int default value = 20
-            Count indicates when to stp adding matches to the history. Creates the size of the list
-            Returns:
-            - A list containing match's id@
-            """
-            time.sleep(1.5)
-            range = f"/ids?start={start}&count={count}"
-            http = (match + match_history + player['puuid'] + range + find + self.api_key).format(
-                  regionMatch=self.region_match
-            )
-            print(f"Getting match history from {start} to {count} games ago")
-            try:
-                  return requests.get(http).json()
-
-            except Exception as e:
-                  print(f'Could not make request {e}')
-   
-      def get_match_history_puuid(self,puuid,start=0,count=20):
-            """Description:
-            This function is similar to get_match_history_player except it uses a User's puuid to search for match history
-            """
-            time.sleep(2)    
-            range = f"/ids?start={start}&count={count}" 
-   
-            http = (match + match_history + puuid + range + find + self.api_key).format(
-                  regionMatch=self.region_match
-            )
-            print(f"Getting match history from {start} to {count} games ago")
-
-            try:
-                  return requests.get(http).json()
-
-            except Exception as e:
-                  print(f'Could not make request {e}')
-      @staticmethod
-      def insert_match_history(connection,user,match_history):
-            """Description:
-            Inserts match history information into an SQL database named match_history using MySQL connector
-            Parameters:
-             - connection: MySQL connection
-            A connection to a User's Database
-             - user : dictionary
-            A dictionary containing a User's information
-             - match_history : list
-            A list of matches from a user
-            Return
-            None
-            """
-            try:
-                  with connection.cursor() as cursor:
-                        for item in match_history:
-            
-                              values = f"('{item}','{user['id']}','{user['accountId']}','{user['puuid']}','{user['name']}')"
-                              query = f"INSERT INTO match_history VALUES {values}"
-                              print(query)
-                              cursor.execute(query)
-                              connection.commit()
-            except Error as e:
-                  print(f"Error: {e}")
-
-      @staticmethod
-      def insert_match_history_data(connection,id,account_id,puuid,name,match_history):
-            """Description:
-            Inserts match history information into an SQL database named match using MySQL connector based on a User's information. This function works without requesting a user
-            Parameters:
-             - connection: MySQL connection
-            A connection to a User's Database
-             - user : id,account_id,puuid and name
-            Four parameters representing a user's information
-             - match_history : list
-            A list of matches from a user
-            Return
-            None
-            """
-            try:
-                  with connection.cursor() as cursor:
-                        for item in match_history:
-                              values = f"('{item}','{id}','{account_id}','{puuid}','{name}')"
-                              query = f"INSERT INTO match_history VALUES {values}"
-                              print(query)
-                              cursor.execute(query)
-                              connection.commit()
-            except Error as e:
-                  print(f"Error: {e}")
-                  
-      def insert_participate (self,connection,participant,match_id,rollback_on_error=False):
-            """Description:
-            Inserts a participate from a match into  SQL database named match using MySQL connector
-            Parameters:
-             - connection: MySQL connection
-            A connection to a User's Database
-             - participate : dictionary
-            A dictionary representing a particpate's data such as their kill and assist
-             - match_id : int
-            A id represnting a match
-            Return
-            None
-            """
-
             for key,value in participant.items():
                   if value == True :
                         participant[key] = 1
@@ -864,9 +653,7 @@ class RiotAPI:
             
             try:
                   with connection.cursor() as cursor:
-
                         item_list = []
-                        
                         for i in range (7):
                               if participant[f'item{i}'] == 0:
                                     item_list.append("No item")
@@ -875,7 +662,6 @@ class RiotAPI:
                                     cursor.execute(query)
                                     item_list.append(cursor.fetchone()[0])
 
-                        print(item_list)
                         values = f"""
                         "{match_id}",{participant['assists']},{participant['champLevel']},{participant['championId']},"{participant['championName']}",{participant['damageDealtToTurrets']},
                         {participant['deaths']},{participant['firstBloodKill']},{participant['firstTowerKill']},{participant['goldSpent']},{participant['item0']},{participant['item1']},
@@ -895,116 +681,233 @@ class RiotAPI:
                   if rollback_on_error:
                         connection.rollback()      
                   raise
-      
-      def insert_match (self,connection,match,rollback_on_error=False):
+
+      def get_match(self,match_id : str) -> dict:
             """Description:
-            Inserts a match and participate from a match into SQL database named match_details using MySQL connector
-            Parameters:
-            A connection to a User's Database
-             - match : dictionary
-            A dictionary representing a match details 
-            Return
-            None
-            """ 
-            data = match['metadata']
-            values = f"'{data['matchId']}','{data['dataVersion']}'"
-            info = match['info']
-            values = f"{values},{info['gameDuration']},'{info['gameId']}','{info['gameMode']}','{info['gameVersion']}',{info['mapId']},'{self.region_match}'"
-            values = f"({values})"
-            query = f"INSERT  INTO game VALUES {values}"
+            This function utilizes the library request to send an HTTP GET request to a specified API endpoint containing match data using the requests library and returns the response in JSON format.
+            It combines various strings componets of RiotsAPI html such as the summoner and query string determined by RIOT with match history, query and YOURAPIKEY
+            Parameters: match_ id(str): A string representing a match id to create an API endpoint to send the request to.
+            Returns: A JSON object containing the response data that is converted into a dictionary.
+            """
+            time.sleep(1.5)
+            http = (match + match_details + match_id + query + self.api_key).format(
+                  regionMatch=self.region_match
+            )
             try:
-
-                  with connection.cursor() as cursor:
-                        print(query)
-                        cursor.execute(query)
-                        connection.commit()
-                        for user in data['participants']:
-                              player_query = f"SELECT EXISTS(SELECT * FROM player WHERE player.puuid = '{user}')"
-                              cursor.execute(player_query)
-                              exist = cursor.fetchone()[0]
-                              "If user is not in database, they are added in. Else their information is not required to get, Values changed to represent boolean"
-                              if exist == 0:
-                                    player = self.get_summoner_info_puuid(user)
-                                    self.insert_query_user(connection,player)
-                           
-                        for participant in info['participants']:
-                              self.insert_participate(connection,participant,data['matchId'])
-   
-            except Error as e:
-                  print(f"Error has occured: {e}")
-                  if rollback_on_error:
-                        connection.rollback()      
-                  raise
-
-      def insert_match_rank(self,connection,match,rollback_on_error=False):
+                  return requests.get(http).json()
+            except Exception as e:
+                  print(f'Could not make request {e}')
+      def insert_match(self,connection : connect,match : dict,rollback_on_error=False) -> None:
             """Description:
-            Function is similar to insert_match with the addition of inserting a player's rank as well
-            Parameters:
-            A connection to a User's Database
-             - match : dictionary
-            A dictionary representing a match details 
-            Return
-            None
-            """ 
-            data = match['metadata']
-            values = f"'{data['matchId']}','{data['dataVersion']}'"
-            info = match['info']
-            values = f"{values},{info['gameDuration']},'{info['gameId']}','{info['gameMode']}','{info['gameVersion']}',{info['mapId']},'{self.region_match}'"
-            values = f"({values})"
-            query = f"INSERT  INTO game VALUES {values}"
-            try:
-
-                  with connection.cursor() as cursor:
-                        print(query)
-                        cursor.execute(query)
-                        connection.commit()
-                        for user in data['participants']:
-                              player_query = f"SELECT EXISTS(SELECT * FROM player WHERE player.puuid = '{user}')"
-                              cursor.execute(player_query)
-                              exist = cursor.fetchone()[0]
-                              "If user is not in database, they are added in. Else their information is not required to get, Values changed to represent boolean"
-                              if exist == 0:
-                                    player = self.get_summoner_info_puuid(user)
-                                    self.insert_query_user(connection,player)
-
-                              rank_query = f"SELECT EXISTS(SELECT * FROM ranked WHERE ranked.puuid = '{user}')"
-                              cursor.execute(rank_query)
-                              exist = cursor.fetchone()[0]
-                              "If user is not in database, they are added in. Else their information is not required to get, Values changed to represent boolean"
-                              if exist == 0:
-                                    player = self.get_summoner_info_puuid(user)
-                                    self.insert_query_user(connection,player)
-                           
-                        for participant in info['participants']:
-                              self.insert_participate(connection,participant,data['matchId'])
-   
-            except Error as e:
-                  print(f"Error has occured: {e}")
-                  if rollback_on_error:
-                        connection.rollback()      
-                  raise
-
-      def insert_rank_history_sql(self,connection,tier,division,start=0,count=20):
-            """Description:
-            Retrieves and inserts all of a tier and division's players match_history and participate data into SQL database using MySQL connector to retrieve a rank's data
-            Since the same players can be in different matches, the function checks if the user is already in the database. A match can also have people have different ranks
+            Inserts a participant from a match into  SQL database named match_details using MySQL connector
+            Parameters 
+            connection: A MySQL connection to a User's Database
+            match: A dictionary contaiting a match data
+            Return: None
+            A match can also have people have different ranks
             so this function ensures any player not added in by insert_rank, is added here. Users can have the same match in their match history as well. Therefore it is needed to check
             if a match is already inserted.
+            """  
+            try:
+                  with connection.cursor() as cursor:
+                        data = match['metadata']
+                        history_query = f"SELECT EXISTS(SELECT * FROM game WHERE game.match_id = '{data['matchId']}')"
+                        cursor.execute(history_query)
+                        exist = cursor.fetchone()[0]
+                        if exist == 1:
+                              print("game already in")
+                              return
+                        
+                        values = f"'{data['matchId']}','{data['dataVersion']}'"
+                        info = match['info']
+                        values = f"{values},{info['gameDuration']},'{info['gameId']}','{info['gameMode']}','{info['gameVersion']}',{info['mapId']},'{self.region_match}'"
+                        values = f"({values})"
+                        query = f"INSERT INTO game VALUES {values}"
+                        print(query)
+                        cursor.execute(query)
+                        connection.commit()
+                        for user in data['participants']:
+                              player_query = f"SELECT EXISTS(SELECT * FROM player WHERE player.puuid = '{user}')"
+                              cursor.execute(player_query)
+                              exist = cursor.fetchone()[0]
+                              print(exist + "1")
+                              "If user is not in database, they are added in. Else their information is not required to get, Values changed to represent boolean"
+                              if exist == 0:
+                                    player = self.get_summoner_info_puuid(user)
+                                    self.insert_query_user(connection,player)
+                                    player_rank = self.get_player_rank(player)
+                                    self.insert_player_rank(player_rank)
+
+                              else:
+                                    "Checks if user's rank is inserted into the database already"
+                                    rank_exist_query = f"SELECT EXISTS(SELECT * FROM ranked WHERE ranked.puuid = '{user}')"
+                                    cursor.execute(rank_exist_query)
+                                    exist = cursor.fetchone()[0]
+                                    print(exist + "2")
+                                    if exist == 0:
+                                          
+                                          rank_query = f"SELECT id FROM player WHERE player.puuid = '{user}'"
+                                          cursor.exectue(rank_query)
+                                          id = cursor.fetchone()[0]
+                                          player_rank = self.get_player_rank_id(id)
+                                          self.insert_player_rank(player_rank)   
+
+                        for participant in info['participants']:
+                              self.insert_participant(connection,participant,data['matchId'])
+                        
+            except Error as e:
+                  print(f"Error has occured: {e}")
+                  if rollback_on_error:
+                        connection.rollback()      
+                  raise
+
+      def insert_match_id (self,connection : connect,match_id : str,rollback_on_error=False) -> None:
+            """Description:
+            Function is similar to insert_match except it inserts a match using a match_id
+            """ 
+            try:
+                  with connection.cursor() as cursor:
+                        history_query = f"SELECT EXISTS(SELECT * FROM game WHERE game.match_id = '{match_id}')"
+                        cursor.execute(history_query)
+                        exist = cursor.fetchone()[0]
+                        if exist == 1:
+                              print("game already in")
+                              return
+
+                        match = self.get_match(match_id)
+                        data = match['metadata']
+                        values = f"'{data['matchId']}','{data['dataVersion']}'"
+                        info = match['info']
+                        values = f"{values},{info['gameDuration']},'{info['gameId']}','{info['gameMode']}','{info['gameVersion']}',{info['mapId']},'{self.region_match}'"
+                        values = f"({values})"
+                        query = f"INSERT INTO game VALUES {values}"
+                        print(query)
+                        cursor.execute(query)
+                        connection.commit()
+      
+                        for user in data['participants']:
+                              player_query = f"SELECT EXISTS(SELECT * FROM player WHERE player.puuid = '{user}')"
+                              cursor.execute(player_query)
+                              exist = cursor.fetchone()[0]
+                              "If user is not in database, they are added in. Else their information is not required to get, Values changed to represent boolean"
+                              if exist == 0:
+                                    player = self.get_summoner_info_puuid(user)
+                                    self.insert_query_user(connection,player)
+                                    player_rank = self.get_player_rank(player)
+                                    self.insert_player_rank(connection,player_rank)
+
+                              else:
+                                    rank_exist_query = f"SELECT EXISTS(SELECT * FROM ranked WHERE ranked.puuid = '{user}')"
+                                    cursor.execute(rank_exist_query)
+                                    exist = cursor.fetchone()[0]
+                                    if exist == 0:
+                                          rank_query = f"SELECT id FROM player WHERE player.puuid = '{user}'"
+                                          print(rank_query)
+                                          cursor.execute(rank_query)
+                                          player_rank = self.get_player_rank_id(id)
+                                          self.insert_player_rank(connection,player_rank) 
+
+                        print("stop")
+                        for participant in info['participants']:
+                              self.insert_participant(connection,participant,data['matchId'])
+                        
+            except Error as e:
+                  print(f"Error has occured: {e}")
+                  if rollback_on_error:
+                        connection.rollback()      
+                  raise
+
+      def get_match_history_player(self,player : dict,start : int=0,count : int=20) -> list:
+            """Description:
+            This function utilizes the library request to send an HTTP GET request to a specified API endpoint containing a User's match history using the requests library and returns the response in JSON format.
+            It combines various strings componets of RiotsAPI html such as the summoner and query string determined by RIOT with a user's id and YOURAPIKEY
+            Parameters:
+            - player : dictionary containing a user's informatoin
+            - start : int default value = 0
+            A match history is based on most recent games played in descending order. Start indicates how many games after a player's most recent game for the beginning of the list
+            - count : int default value = 20 Count indicates when to stop adding matches to the history. Creates the size of the list
+            Returns: A list containing match's ids
+            """
+            time.sleep(1.5)
+            range = f"/ids?start={start}&count={count}"
+            http = (match + match_history + player['puuid'] + range + find + self.api_key).format(
+                  regionMatch=self.region_match
+            )
+            try:
+                  return requests.get(http).json()
+
+            except Exception as e:
+                  print(f'Could not make request {e}')
+   
+      def get_match_history_puuid(self,puuid : str,start:int=0,count:int=20) -> list:
+            """Description:
+            This function is similar to get_match_history_player except it uses a User's puuid to search for match history
+            """
+            time.sleep(2)    
+            range = f"/ids?start={start}&count={count}" 
+            http = (match + match_history + puuid + range + find + self.api_key).format(
+                  regionMatch=self.region_match
+            )
+            try:
+                  return requests.get(http).json()
+
+            except Exception as e:
+                  print(f'Could not make request {e}')
+
+      def insert_match_history(self,connection : connect,user : dict,match_history : list) -> None:
+            """Description:
+            Inserts match history information into an SQL database named match_history using MySQL connector
+            Parameters:
+            connection: MySQL connection
+            user : dictionary dictionary containing a User's information
+            match_history : A list of matches from a user
+            Return: None
+            """
+            try:
+                  with connection.cursor() as cursor:
+                        for item in match_history:
+                              values = f"('{item}','{user['id']}','{user['accountId']}','{user['puuid']}','{user['name']}')"
+                              query = f"INSERT IGNORE INTO match_history VALUES {values}"
+                              print(query)
+                              cursor.execute(query)
+                              connection.commit()
+                              self.insert_match_id(connection,item)
+                        
+            except Error as e:
+                  print(f"Error: {e}")
+
+      def insert_match_history_data(self,connection : connect,id : str,account_id : str,puuid : str,name : str ,match_history : list) -> None:
+            """Description:
+            Similar to insert_match_history except it takes a player's info that is already parsed
+            """
+            try:
+                  with connection.cursor() as cursor:
+                        for item in match_history:
+                              values = f"('{item}','{id}','{account_id}','{puuid}','{name}')"
+                              query = f"INSERT IGNORE INTO match_history VALUES {values}"
+                              print(query)
+                              cursor.execute(query)
+                              connection.commit()
+                              self.insert_match_id(connection,item)
+            
+            except Error as e:
+                  print(f"Error: {e}")
+
+      def insert_rank_history_sql(self,connection : connect,tier : str,division : str,start : int =0,count : int=20) -> None:
+            """Description:
+            Retrieves and inserts all of a tier and division's players match_history and participant data into SQL database using MySQL connector to retrieve a rank's data
+            Since the same players can be in different matches, the function checks if the user is already in the database.
             Uses get_summoner_info, insert_query_user,get_match_history_puuid,get_match and insert_match
             Parameters:
-             - connection: MySQL connection
-            A connection to a User's Database
-             - tier : str
-            A str representing a tier
-             - division: str
-            A str represnting a match
-             - start, count :int
-             the start and end of their match history
-            Return
-            None
+            connection: MySQL connection to a User's Database
+            tier : str representing one of 6 tiers ("IRON","BRONZE","SILVER","GOLD","PLATINUM","DIAMOND","MASTER","GRANDMASTER","CHALLENGER")
+            division : str representing one of 4 divisions ("I","II","III","IV"), if tier is MASTER, GRANDMASTER OR CHALLENGER, DIVISION IS I
+            start and count are based on get_match_history
+            Return  None
             """     
             if isinstance(division,int):
                   division = self.num_roman(division)
+
             try:
                   with connection.cursor(buffered=True) as cursor:
                         query = f"SELECT ranked.id,ranked.account_id,ranked.puuid,ranked.name FROM ranked WHERE ranked.tier = '{tier}' AND ranked.division = '{division}'"
@@ -1020,39 +923,23 @@ class RiotAPI:
                                     player = self.get_summoner_info_puuid(item[2])
                                     self.insert_query_user(connection,player)
                                     history = self.get_match_history_puuid(player['puuid'],start,count)
+                                    self.insert_match_history(connection,player)
 
                               else:
-
-                                    history = self.get_match_history_puuid(item[2],start,count) 
-
-                              for match in history:
-                                    history_query = f"SELECT EXISTS(SELECT * FROM game WHERE game.match_id = '{match}')"
-                                    cursor.execute(history_query)
-                                    exist = cursor.fetchone()[0]
-                                    if exist == 0:
-                                          print("game not in")
-                                          game = self.get_match(match)
-                                          self.insert_match(connection,game)
-                                    else:
-                                          print("game in") 
-                                         
-                        
-
-      
+                                    history = self.get_match_history_puuid(item[2],start,count)
+                                    self.insert_match_history_data(connection,item[0],item[1],item[2],item[3],history) 
+    
             except Exception as e:
                   print(f'Could not make request {e}')
 
       @staticmethod
-      def get_winrate_player(connection,player):
+      def get_winrate_player(connection : connect,player:dict) -> float:
             """Description:
             Retrieves a player's win rate based on which games are added into the SQL database by running query
             Parameters:
-             - connection: MySQL connection
-            A connection to a User's Database
-             - player : dictionary
-            User's information
-            Return
-            win rate decimal
+             - connection: MySQL connection to a User's Database
+             - player : A dictionary representing a User's information
+            Return: A decimal representing a player's win rate
             """     
             try:
                   with connection.cursor(buffered = True) as cursor:
@@ -1073,16 +960,13 @@ class RiotAPI:
                   print(f"Error has occured : {e}")
 
       @staticmethod
-      def create_procedure_win_champion(connection,champion):
+      def create_procedure_win_champion(connection : connect,champion : str) -> None:
             """Description:
-            Retrieves a player's win rate based on the champion which games are added into the SQL database by creating a precedure and then excuting
+            Retrieves win rate based on the champion which games are added into the SQL database by creating a precedure and then excuting
             Parameters:
-             - connection: MySQL connection
-            A connection to a User's Database
-             - champion : int
-            Champion's ID
-            Return
-            Amount of wins
+             - connection: MySQL connectionto a User's Database
+             - champion : int representing a Champion's ID
+            Return Amount of wins a specific champion has
             """     
             try:
                   with connection.cursor() as cursor:
@@ -1107,16 +991,13 @@ class RiotAPI:
                   print(f"Error has occured: {e}")
 
       @staticmethod
-      def get_winrate_champion(connection,champion):
+      def get_winrate_champion(connection : connect,champion : str) -> float:
             """Description:
             Retrieves a champion's win rate based on which games are added into the SQL database by running query
             Parameters:
              - connection: MySQL connection
-            A connection to a User's Database
-             - champion:int
-            An integer value
-            Return
-            win rate decimal
+             - champion: str representing a champion's name
+            Return: decimal champion winrate
             """     
             try:
                   with connection.cursor(buffered = True) as cursor:
@@ -1137,17 +1018,15 @@ class RiotAPI:
                   print(f"Error has occured : {e}")
             
       @staticmethod    
-      def get_winrate_player_champion(connection,player,champion):
+      def get_winrate_player_champion(connection,player : dict,champion : str) -> float:
             """Description:
-            Retrieves a player's win rate based on which games are added into the SQL database by running query on which chamption they play
+            Retrieves a player's win rate based on which games are added into the SQL database and by champion name
             Parameters:
              - connection: MySQL connection
             A connection to a User's Database
-             - player : dictionary
-             - champion : id
-            User's information
-            Return
-            win rate decimal
+             - player : dictionary having User's information
+             - champion : str champion name
+            Return : win rate decimal
             """     
             try:
                   with connection.cursor(buffered = True) as cursor:
@@ -1168,50 +1047,17 @@ class RiotAPI:
                   print(f"Error has occured : {e}")
       
 
-      @staticmethod    
-      def get_winrate_player_champion(connection,player,champion):
-            """Description:
-            Retrieves a player's win rate based on which games are added into the SQL database by running query on which chamption they play
-            Parameters:
-             - connection: MySQL connection
-            A connection to a User's Database
-             - player : dictionary
-             - champion : id
-            User's information
-            Return
-            win rate decimal
-            """     
-            try:
-                  with connection.cursor(buffered = True) as cursor:
-                        wins = f"SELECT COUNT(participant.id) AS id FROM participant WHERE participant.id = '{player['id']}' AND participant.win = 1 AND participant.champion_name = '{champion}'" 
-                        games_played = f"SELECT COUNT(participant.id) FROM participant WHERE participant.id = '{player['id']}' participant.champion_name = '{champion}'"
-                        cursor.execute(wins)
-                        total_wins = cursor.fetchone()[0]
-                        cursor.execute(games_played)
-                        total_games =cursor.fetchone()[0]
-                        if total_wins == 0:
-                              print(f"Player: {player['name']} has no wins")
-                              return total_wins
-                        
-                        print(f"Player: {player['name']} has a win rate of {total_wins*100/total_games}% in {total_games} games played ")
-                        return (total_wins/total_games)
-                        
-            except Error as e:
-                  print(f"Error has occured : {e}")
 
       @staticmethod
-      def get_winrate_champion_rank(connection,champion,rank,division):
+      def get_winrate_champion_rank(connection,champion : connect,rank : str,division :str) -> float:
             """Description:
-            Retrieves a champion's win rate based on which games are added into the SQL database by running query and the rank of the player who played the champion
+            Retrieves a player's win rate based on which games are added into the SQL database and by champion name
             Parameters:
-             - connection: MySQL connection
-            A connection to a User's Database
-             - champion:int
-            An integer value
-             - rank : str
-             - division : str
-            Return
-            win rate decimal
+            connection: MySQL connection to a User's Database
+            tier : str representing one of 6 tiers ("IRON","BRONZE","SILVER","GOLD","PLATINUM","DIAMOND","MASTER","GRANDMASTER","CHALLENGER")
+            division : str representing one of 4 divisions ("I","II","III","IV"), if tier is MASTER, GRANDMASTER OR CHALLENGER, DIVISION IS I
+            champion : str champion name
+            Return : win rate decimal
             """
             try:
                   with connection.cursor(buffered = True) as cursor:
@@ -1246,16 +1092,13 @@ class RiotAPI:
 
 
       @staticmethod
-      def get_winrate_item(connection,item):
+      def get_winrate_item(connection : connect,item : str) -> float:
             """Description:
             Retrieves a items's win rate based on which games are added into the SQL database by running query
             Parameters:
-             - connection: MySQL connection
-            A connection to a User's Database
-             - item:int
-            An item's ID
-            Return
-            win rate decimal
+             - connection: MySQL connection to a User's Database
+             - item: str representing an items name
+            Return: win rate decimal
             """
             try:
                   with connection.cursor(buffered = True) as cursor:
@@ -1302,16 +1145,15 @@ class RiotAPI:
                   print(f"Error has occured : {e}")
 
       @staticmethod
-      def get_winrate_item_rank(connection,item,rank,division):
+      def get_winrate_item_rank(connection,item : str,rank :str,division : str) -> float:
             """Description:
-            Retrieves a items's win rate based on which games are added into the SQL database by running query based on the rank of the player who bought the item
+            Retrieves a items's win rate based on which games are added into the SQL database by running query and by the rank
             Parameters:
-             - connection: MySQL connection
-            A connection to a User's Database
-             - item:int
-            An item's ID
-            Return
-            win rate decimal
+            connection: MySQL connection to a User's Database
+            item: str representing an items name
+            tier : str representing one of 6 tiers ("IRON","BRONZE","SILVER","GOLD","PLATINUM","DIAMOND","MASTER","GRANDMASTER","CHALLENGER")
+            division : str representing one of 4 divisions ("I","II","III","IV"), if tier is MASTER, GRANDMASTER OR CHALLENGER, DIVISION IS I
+            Return: win rate decimal
             """
             try:
                   with connection.cursor(buffered = True) as cursor:
@@ -1363,16 +1205,14 @@ class RiotAPI:
                   print(f"Error has occured : {e}")
 
       @staticmethod
-      def get_winrate_champion_item(connection,champion,item):
+      def get_winrate_champion_item(connection : connect,champion : str,item :str) -> float:
             """Description:
-            Retrieves a items's win rate based on which games are added into the SQL database by running query based on the champion the item was bought on
+            Retrieves a items's win rate based on which games are added into the SQL database by running query and by champion name
             Parameters:
-             - connection: MySQL connection
-            A connection to a User's Database
-             - item:int
-            An item's ID
-            Return
-            win rate decimal
+            connection: MySQL connection to a User's Database
+            item: str representing an items name
+            champion : str representing a champion's name
+            Return: win rate decimal
             """
             try:
                   with connection.cursor(buffered = True) as cursor:
@@ -1419,16 +1259,16 @@ class RiotAPI:
                   print(f"Error has occured : {e}")
 
       @staticmethod
-      def get_winrate_champion_item_rank(connection,champion,item,rank,division):
+      def get_winrate_champion_item_rank(connection : connect,champion : str,item : str,rank : str,division : str) -> None:
             """Description:
-            Retrieves a items's win rate based on which games are added into the SQL database by running query based on the rank of the player who bought the item and champion
+            Retrieves a champion, items and rank's win rate based on which games are added into the SQL database by running query a
             Parameters:
-             - connection: MySQL connection
-            A connection to a User's Database
-             - item:int
-            An item's ID
-            Return
-            win rate decimal
+            connection: MySQL connection to a User's Database
+            champion : str representing a champion's name
+            item: str representing an items name
+            tier : str representing one of 6 tiers ("IRON","BRONZE","SILVER","GOLD","PLATINUM","DIAMOND","MASTER","GRANDMASTER","CHALLENGER")
+            division : str representing one of 4 divisions ("I","II","III","IV"), if tier is MASTER, GRANDMASTER OR CHALLENGER, DIVISION IS I
+            Return: win rate decimal
             """
             try:
                   with connection.cursor(buffered = True) as cursor:
@@ -1479,83 +1319,20 @@ class RiotAPI:
                         
             except Error as e:
                   print(f"Error has occured : {e}")        
-                  
-      @staticmethod
-      def get_winrate_champion_mastery(connection,champion,item):
-            try:
-                  with connection.cursor(buffered = True) as cursor:
-                        
-                        if isinstance(item,str):
-                              query = f"SELECT item_id FROM items WHERE items.item_name = '{item}'"
-                              print(query)
-                              cursor.execute(query)
-                              item_name = item
-                              item_id = cursor.fetchone()[0]
-                        else:
-                              item_id = item
 
-                        wins = f"""
-                        SELECT COUNT(p.win)
-                        FROM participant AS p
-                        WHERE (p.item0 = {item_id} OR p.item1 = {item_id} OR p.item2 = {item_id} OR p.item3 = {item_id} OR p.item4 = {item_id} OR p.item5 = {item_id} OR p.item6 = {item_id}) AND p.win = 1 AND p.champion_name = '{champion}'
-                        """
-                        games_played = f"""
-                        SELECT COUNT(p.win)
-                        FROM participant AS p
-                        WHERE p.item0 = {item_id} OR p.item1 = {item_id} OR p.item2 = {item_id} OR p.item3 = {item_id} OR p.item4 = {item_id} OR p.item5 = {item_id} OR p.item6 = {item_id} AND p.champion_name = '{champion}'
-                        """
-                        times_played =  f"""
-                        SELECT COUNT(p.win)
-                        FROM participant as p
-                        """
-                        cursor.execute(wins)
-                        total_wins = cursor.fetchone()
-                        cursor.execute(games_played)
-                        total_games_item =cursor.fetchone()
-                        cursor.execute(times_played)
-                        total_participants = cursor.fetchone()
-                        print(f"Item:{item_name} has a win rate of {total_wins[0]*100/total_games_item[0]}% in {total_games_item[0]} games played with a buy rate of {total_games_item[0]*100/total_participants[0]}% playing{champion}")
-                        return total_games_item,(total_wins[0]/total_games_item[0])
-                        
-            except Error as e:
-                  print(f"Error has occured : {e}")
-
-
-
-
-      @staticmethod
-      def execute_multiple_statements(connection, statements, rollback_on_error=False):
-            try:
-                  cursor = connection.cursor()
-                  for statement in statements:
-                        cursor.execute(statement)
-                        if not rollback_on_error:
-                              connection.commit() # commit on each statement
-            except Exception as e:
-                  print(f"Error has occured : {e}")
-                  if rollback_on_error:
-                        connection.rollback()
-                  raise
-            else:
-                  if rollback_on_error:
-                        connection.commit()
-                        print(df.head(5))
-                        print(df.describe())
-
-def analyze_champion_winrate(connection,query):
+      
+def analyze_champion_winrate(connection : connect,query : str):
       """
-      Retrieve data from a MySQL database, convert it to a Pandas dataframe, and plots win rate using Plotly. The query determines what the win rate is based off
-      Plots with rate depending on combination of champion, rank and player
+      Retrieve data from a MySQL database, convert it to a Pandas dataframe, and plots champion win rate using Plotly. The query determines what the win rate is based off.
+      Example
+      que = "SELECT * FROM participant INNER JOIN ranked ON participant.id = ranked.id" This queue only selects participants with a certain rank
+      que2 = "SELECT * FROM participant"  This queue selects all participants and anaylzes every user
       Parameter 
       query (str): The SQL query to execute to retrieve data from the database.
-
       Returns:
         fig: A Plotly scatter plot with labeled axes from champion.
-
       Raises:
          mysql.connector.Error: If there is an error connecting to or querying the database.
-
-      'SELECT * FROM participants
     """
       try:
             with connection.cursor(buffered=True) as cursor:
@@ -1576,20 +1353,15 @@ def analyze_champion_winrate(connection,query):
       except Exception as e:
             print(f"Error: {e}")
 
-def analyze_champion_playrate(connection,query):
+def analyze_champion_playrate(connection : connect,query : str):
       """
-      Retrieve data from a MySQL database, convert it to a Pandas dataframe, and plots win rate using Plotly. The query determines what the win rate is based off
-      Plots with rate depending on combination of champion, rank and player
+      Retrieve data from a MySQL database, convert it to a Pandas dataframe, and plots champion play rate using Plotly. The query determines what the play rate is based off
       Parameter 
       query (str): The SQL query to execute to retrieve data from the database.
-
       Returns:
         fig: A Plotly scatter plot with labeled axes from champion.
-
       Raises:
          mysql.connector.Error: If there is an error connecting to or querying the database.
-
-      'SELECT * FROM participants
     """
       try:
             with connection.cursor(buffered=True) as cursor:
@@ -1606,26 +1378,21 @@ def analyze_champion_playrate(connection,query):
                   fig.update_traces(textposition='top center')
                   fig.update_layout(title_text='Play rate by champion', title_x=0.5)
                   fig.show()
-
                   return fig    
 
       except Exception as e:
             print(f"Error: {e}")
 
+
 def analyze_item_purchase_rate(connection,query):
       """
-      Retrieve data from a MySQL database, convert it to a Pandas dataframe, and plots win rate using Plotly. The query determines what the win rate is based off
-      Plots with rate depending on combination of champion, rank and player
+      Retrieve data from a MySQL database, convert it to a Pandas dataframe, and plots champion win rate using Plotly. The query determines what the win rate is based off
       Parameter 
       query (str): The SQL query to execute to retrieve data from the database.
-
       Returns:
         fig: A Plotly scatter plot with labeled axes from champion.
-
       Raises:
          mysql.connector.Error: If there is an error connecting to or querying the database.
-
-      'SELECT * FROM participants
     """
       try:
             with connection.cursor(buffered=True) as cursor:
@@ -1653,10 +1420,11 @@ def analyze_item_purchase_rate(connection,query):
                   fig.update_traces(textposition='top center')
                   fig.update_layout(title_text='Purchase rate', title_x=0.5)
                   fig.show()
+                  return fig
 
       except Exception as e:
             print(f"Error: {e}")
-
+            
 def sql_csv(connection,query,name_csv,index=False):
       """
     Execute a SQL query on a MySQL database, convert the result to a Pandas dataframe,
@@ -1692,12 +1460,15 @@ def sql_csv(connection,query,name_csv,index=False):
 que = "SELECT * FROM participant INNER JOIN ranked ON participant.id = ranked.id"
 que2 = "SELECT * FROM participant"
 que3 = "SELECT * FROM items"
-champ_que = "SELECT * FROM champion"
+naServer = RiotAPI(api_key,"americas","na1")
+
+
 """
 champ = naServer.get_champion()
 item = naServer.get_items()
 challenger = naServer.get_challenger()
-D1 = naServer.get_rank("DIAMOND",1)
+D1 = naServer.get_rank("DIAMOND","I")
+naServer.insert_all_rank(connection,D1)
 """
 
 try:
@@ -1711,16 +1482,18 @@ try:
             """
             naServer.insert_champions(connection,champ)
             naServer.insert_items(connection,item)
+            naServer.insert_rank_history_sql(connection,"CHALLENGER","I",0,10)
             """
-            analyze_item_purchase_rate(connection,que2,)
+            naServer.insert_rank_history_sql(connection,"CHALLENGER","I",0,10)
+            
             
 except mysql.connector.Error as e:
         if e.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-            print("Something is wrong with your user name or password")
+            print("Either your user name or password is incorrect")
         elif e.errno == errorcode.ER_BAD_DB_ERROR:
             print("Database does not exist")
             naServer.insert_rank_history_sql(connection,"CHALLENGER","I")
             sql_csv(connection,que,"challenger")
-            analyze_champion(connection,que)
+
         else:
             print(e)

@@ -14,32 +14,34 @@ CREATE TABLE IF NOT EXISTS player(
 );
 
 CREATE TABLE IF NOT EXISTS champion(
-    champion_id INTEGER PRIMARY KEY,
+    champion_id INTEGER,
     champion_name VARCHAR(15) NOT NULL,
     version VARCHAR(10) NOT NULL,
     attack INTEGER,
     defense INTEGER,
     magic INTEGER,
-    difficulty INTEGER
+    difficulty INTEGER,
+    PRIMARY KEY (champion_id,champion_name)
 );
 
 CREATE TABLE IF NOT EXISTS type(
     tags VARCHAR(10),
     champion_id INTEGER,
-    PRIMARY KEY (champion_id,tags),
-    FOREIGN KEY (champion_id) REFERENCES champion(champion_id) ON DELETE CASCADE
+    PRIMARY KEY (champion_id,tags)
 );
+
+select * from champion;
+ALTER TABLE type
+ADD FOREIGN KEY (champion_id)
+REFERENCES champion(champion_id) ON DELETE CASCADE;
 
 CREATE TABLE IF NOT EXISTS items(
     item_id INT,
-    item_name VARCHAR(30),
+    item_name VARCHAR(35),
     PRIMARY KEY (item_id) 
 );
 
-SELECT * FROM champion;
-DROP TABLE type;
-DROP TABLE champion;
-DROP TABLE ranked;
+
 
 CREATE TABLE IF NOT EXISTS mastery(
     champion_id INT, 
@@ -60,7 +62,7 @@ CREATE TABLE IF NOT EXISTS mastery(
 CREATE TABLE IF NOT EXISTS ranked(
     league_id VARCHAR(50),
     queue_type VARCHAR(15),
-    tier VARCHAR(10),
+    tier VARCHAR(15),
     division VARCHAR(10),
     id VARCHAR(80),
     account_id VARCHAR(80),
@@ -73,14 +75,15 @@ CREATE TABLE IF NOT EXISTS ranked(
     inactive TINYINT,
     freshBlood TINYINT,
     streak TINYINT,
-    PRIMARY KEY(league_id,id,account_id,puuid,name),
-    FOREIGN KEY (id,account_id,puuid,name) REFERENCES player(id,account_id,puuid,name) ON DELETE CASCADE
+    PRIMARY KEY(league_id,id,account_id,puuid,name)
 );
+
 
 ALTER TABLE ranked
 ADD FOREIGN KEY(id,account_id,puuid,name)
-REFERENCES player(id,account,puuid,name)
+REFERENCES player(id,account_id,puuid,name)
 ON DELETE CASCADE;
+
 
 CREATE TABLE IF NOT EXISTS game(
     match_id VARCHAR(20),
@@ -100,20 +103,11 @@ CREATE TABLE IF NOT EXISTS match_history(
     account_id VARCHAR(80),
     puuid VARCHAR(80),
     name VARCHAR(30), 
-    PRIMARY KEY (match_id,account_id,id,puuid,name),
+    PRIMARY KEY (match_id,id,account_id,puuid,name),
     FOREIGN KEY (match_id) REFERENCES game(match_id) ON DELETE CASCADE, 
     FOREIGN KEY (id,account_id,puuid,name) REFERENCES player(id,account_id,puuid,name) ON DELETE CASCADE
 );
 
-ALTER TABLE match_history
-ADD FOREIGN KEY(id,account_id,puuid,name)
-REFERENCES player(id,account,puuid,name)
-ON DELETE CASCADE;
-
-ALTER TABLE match_history
-ADD FOREIGN KEY(match_id)
-REFERENCES game(match_id)
-ON DELETE CASCADE;
 
 CREATE TABLE IF NOT EXISTS participant(
     match_id VARCHAR(40),
@@ -134,7 +128,7 @@ CREATE TABLE IF NOT EXISTS participant(
     item5 INT,
     item6 INT,
     kills INT,
-    participate_id INT,
+    participant_id INT,
     sumoner_level INT,
     id VARCHAR(80),
     team_position VARCHAR(10),
@@ -150,9 +144,15 @@ CREATE TABLE IF NOT EXISTS participant(
 );
 
 ALTER TABLE participant
-ADD FOREIGN KEY(id,account_id,puuid,name)
-REFERENCES player(id,account,puuid,name)
-ON DELETE CASCADE;
+ADD COLUMN item0_name VARCHAR(35) AFTER item6,
+ADD COLUMN item1_name VARCHAR(35) AFTER item0_name,
+ADD COLUMN item2_name VARCHAR(35) AFTER item1_name,
+ADD COLUMN item3_name VARCHAR(35) AFTER item2_name,
+ADD COLUMN item4_name VARCHAR(35) AFTER item3_name,
+ADD COLUMN item5_name VARCHAR(35) AFTER item4_name,
+ADD COLUMN item6_name VARCHAR(35) AFTER item5_name;
+
+
 
 DROP procedure IF EXISTS `champion_winrate`;
 DELIMITER $$
@@ -163,12 +163,3 @@ SELECT COUNT(part.win) FROM participant as part WHERE part.win = 1 AND part.cham
 END$$
 DELIMITER ;
                         
-SELECT * FROM participant;
-SELECT * FROM high_ranked;
-
-SELECT COUNT(participant.win)
-FROM participant
-INNER JOIN high_ranked 
-ON participant.id = high_ranked.id
-WHERE participant.id = high_ranked.id AND participant.champion_name = 'Soraka' AND participant.win = 1;
-
