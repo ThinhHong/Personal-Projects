@@ -1,8 +1,10 @@
 ---
 title: "Data analysis"
 author: "Thinh Hong"
-date: '`r Sys.Date()`'
-output: html_document
+date: "`r Sys.Date()`"
+output:
+  pdf_document: default
+  html_document: default
 ---
 The study involves 250 individuals and 19 variables, including the dependent variable. These variables are considered as biomarkers of cardiovascular health, which also include relevant demographic variables.
 The objective of the study is to evaluate the relationship between Triglyceride (dependent variable) and the other biomarkers of cardiovascular health. The data/variable dictionary is as follows. 
