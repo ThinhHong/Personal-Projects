@@ -31,9 +31,8 @@ Triglyceride analysis	Rstudio		 A linear model was done on triglyecride data con
 League of legends API	Python		 An ETL pipeline was constructed using Riot's API to gather various leaugue of legends data to a
 					 SQL database. Data was processed using Python Pandas and then analyzed in various ways such as 
 					 visualiztion champion win rate and play rate using an interactive scatter plot using ploty. 
-					 Utilizing Sklearn, machine learning models such as MLP were used to predict based on certain 
-					 factors, which team would win the match. Validity of dataset is also analyzed by using 					  				 qq plots, covriance and leverage/outliers. A website was constructed so that a user can ask for 
-					 the winrate/playrate of a champion or predict which team will win based on their current data. 
+					 Utilizing Sklearn, machine learning models such as MLP were used to predict which team would win the match based on certain 
+					 factors, Validity of dataset is also analyzed by using  qq plots and histograms. A website was constructed so that a user can 						ask for the winrate/playrate of a champion or predict which team will win based on their current data. 
 					 Matplotlib and seaborn were also used to visulize data and determine data validity. 
 						
 						
