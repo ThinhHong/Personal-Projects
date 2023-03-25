@@ -25,6 +25,10 @@ The RiotAPI.py file contains several functions that handle database connections,
 Data Visualization and Analysis
 Finally, you can use the RiotAPI.py file to generate plots and perform statistical analysis on the data. 
 This file uses the pandas and plotly libraries to manipulate and visualize the data.
+The csv file all_paricipants and items was analyzed using jupyter notebook. The ipynb file named
+data analysis solves questions such as which champions have the highest win rate,
+most popular items and champion. Assess the normality of champion win rate depending on
+play rate of champion.
 
 Configuration
 All table creations and alters in the SQL file need to be ran first to create the needed tables.
