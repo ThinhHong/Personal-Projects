@@ -47,13 +47,14 @@ most popular items and champion. Assess the normality of champion win rate depen
 play rate of champion.
 
 Predicting Winner of match
-
 Several machine learning algorithms are implemented to predict the winner of the match based on overall team data found at the end of a match
 
 Dashboard
 
 A dashboard was implemented using plotly to visualizing the data. It can be used to get the winrate of a champion, play rate of an item or the chances of a team winning based on end game data.
-It can be used to bring the visual images of champion icons and item icons.
+It can be used to bring the visual images of champion icons and item icons. Using  dash import Dash, html, dash_table, dcc, callback, Output, Input
+dash bootstrap components, html and dash mantine components as dmc
+It order to create the dash app, run Dashboard.py.
 
 Configuration
 All table creations and alters in the SQL file need to be ran first to create the needed tables.
