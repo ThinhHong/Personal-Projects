@@ -129,7 +129,7 @@ CREATE TABLE IF NOT EXISTS participant(
     item6 INT,
     kills INT,
     participant_id INT,
-    sumoner_level INT,
+    summoner_level INT,
     id VARCHAR(80),
     team_position VARCHAR(10),
     total_damage INT,

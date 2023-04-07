@@ -13,6 +13,16 @@ choose from a wide variety of champions, each with their own distinct personalit
 League of Legends is also known for its competitive scene, with professional players and teams competing in international tournaments for large cash prizes. 
 The game is constantly updated with new champions, gameplay mechanics, and features to keep players engaged and the community active
 
+Dependencies:
+
+scikit-learn
+xgboost
+matplotlab
+pandas
+plotly
+seaborn
+Install missing dependencies with pip install or anaconda
+
 This project is a data analysis tool that uses the Riot API to gather data on League of Legends matches and perform statistical analysis on that data. The project consists of several components:
 
 API requests to gather data from the Riot API
@@ -47,7 +57,8 @@ most popular items and champion. Assess the normality of champion win rate depen
 play rate of champion.
 
 Predicting Winner of match
-Several machine learning algorithms are implemented to predict the winner of the match based on overall team data found at the end of a match
+Several machine learning algorithms are implemented to predict the winner of the match based on overall team data found at the end of a match. Uses mlp, logistic regression and 
+xgboost and analyzed using f1 scores and classification reports
 
 Dashboard
 

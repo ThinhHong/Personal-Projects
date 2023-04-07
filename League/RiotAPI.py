@@ -49,6 +49,7 @@ champions = config['userID']['champions']
 items = config['userID']['items']
 mastery = config['userID']['initialMastery']
 by_champion = config['userID']['byChampion']
+
 "All region a match can take place in"
 match_regions = ["sea","asia","americas","europe"]
 "All region a player can exist in"
@@ -1034,7 +1035,42 @@ class RiotAPI:
             except Error as e:
                   print(f"Error has occured : {e}")
             
-      @staticmethod    
+      @staticmethod
+
+      def get_best_champions(connection: connect) -> list:
+            """Description:
+            Retrieves a the top 5 champions basedon which games are added into the SQL database by running query
+            Parameters:
+             - connection: MySQL connection
+            Return: A list of top 5 champions in descending order
+            """     
+            try:
+                  with connection.cursor(buffered = True) as cursor:
+                        #Creates query used to retrieve win rate of champion in SQL database
+                        all_champions = "SELECT champion_name FROM champion"
+                        cursor.execute(all_champions)
+                        champions = cursor.fetchall()
+                        champ_winrate = {}
+                        winrate = []
+                        for champ in champions:
+                              wins = f"SELECT COUNT(participant.win) FROM participant WHERE participant.champion_name = '{champ}' AND participant.win = 1"
+                              games_played = f"SELECT COUNT(participant.champion_name) FROM participant WHERE participant.champion_name = '{champ}'"
+                              cursor.execute(wins)
+                              total_wins = cursor.fetchone()[0]
+                              cursor.execute(games_played)
+                              total_games =cursor.fetchone()[0]
+                              champ_winrate[champ] = total_wins/total_games
+                              winrate.append(total_wins/total_games)
+                        
+                        winrate = sorted(winrate)
+                        k = len(winrate)
+                 
+                        return (total_wins/total_games)
+  
+            except Error as e:
+                  print(f"Error has occured : {e}")
+
+
       def get_winrate_player_champion(connection, player: dict, champion: str) -> float:
             """Description:
             Retrieves a player's win rate based on which games are added into the SQL database and by champion name
@@ -1497,6 +1533,8 @@ challenger = naServer.get_challenger()
 D1 = naServer.get_rank("DIAMOND","I")
 naServer.insert_all_rank(connection,D1)
 """
+challenger = naServer.get_challenger()
+
 
 try:
       with connect(
@@ -1511,7 +1549,8 @@ try:
             naServer.insert_items(connection,item)
             naServer.insert_rank_history_sql(connection,"CHALLENGER","I",0,10)
             """
-            sql_csv(connection,que2,"all_participants")
+            naServer.insert_high_rank(connection,challenger)
+            naServer.insert_rank_history_sql(connection,"CHALLENGER","I",0,10)
             
             
 except mysql.connector.Error as e:

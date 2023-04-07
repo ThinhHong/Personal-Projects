@@ -3,7 +3,7 @@ import dash_bootstrap_components as dbc
 import dash_mantine_components as dmc
 import pandas as pd
 import plotly.express as px
-
+import xgboost as xgb
 
 # Read csv file
 df = pd.read_csv("all_participants.csv")
