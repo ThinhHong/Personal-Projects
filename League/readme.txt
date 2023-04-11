@@ -62,9 +62,9 @@ xgboost and analyzed using f1 scores and classification reports
 
 Dashboard
 
+Dashboard reads a csv named all_participants. In order to retrieve data, run function in Riot API sql_csv. In Dashboard app, change read file to view any data you have collected and wish to view.
 A dashboard was implemented using plotly to visualizing the data. It can be used to get the winrate of a champion, play rate of an item or the chances of a team winning based on end game data.
 It can be used to bring the visual images of champion icons and item icons. Using  dash import Dash, html, dash_table, dcc, callback, Output, Input
-dash bootstrap components, html and dash mantine components as dmc
 It order to create the dash app, run Dashboard.py.
 
 Configuration

@@ -242,6 +242,7 @@ class RiotAPI:
       def get_champion() -> dict:
             """Description:
             This function utilizes the library request to send an HTTP GET request to Data Dragon containing all current champions and returns the response in JSON format.
+            Champion json file is manually updated by RIOT. When a new champion is added, there is a delay before the json file is updated.
             Parameters:
             - None    
             Returns: A JSON object containing the response data that is then converted into a dictonary.
@@ -442,6 +443,7 @@ class RiotAPI:
             Function is similar to get_player_rank excecpt it only requires a player's id
             """
             time.sleep(1.5)
+            print(id)
             http = (rank + by_summoner + id + query + self.api_key).format(
                   regionPlayer=self.region_player
                   )         
@@ -548,6 +550,7 @@ class RiotAPI:
                               values = f"({values[:-1]})" 
 
                         query = f"INSERT INTO ranked VALUES {values}"
+                        print(query)
                         cursor.execute(query)
 
                         if not rollback_on_error:
@@ -558,7 +561,7 @@ class RiotAPI:
                         connection.rollback()      
                   raise  
              
-      def insert_player_rank(self, connection: connect, data: list, rollback_on_error: bool=False) -> None:
+      def insert_player_rank(self, connection: connect, data: list) -> None:
             """Description:
             Inserts a player's ranks information into an SQL database named ranked. Players can have a rank in Rank solo, rank flex, none or both. Data is obtained using get_rank
             Parameters:
@@ -568,14 +571,14 @@ class RiotAPI:
             """
             #Using get_rank in to retrieve rank can return a list of varying size as the player can have different types of rank. len of either 0(no rank),1(1 type rank),2(both ranks)
             if len(data) == 0:
-                  print("Player does not have a rank")
                   return
-
-            print(type(data))                  
+      
             for rank in data:
                   #The RiotAPI class is set to a specific queue. This if statements checks if the player has the correct rank queue type before inserting
                   if rank['queueType'] == self.queue:
                         self.insert_rank(connection,rank)
+
+            
 
       def insert_all_rank(self, connection: connect, data: list, rollback_on_error: bool=False) -> None:
             """Description:
@@ -790,6 +793,10 @@ class RiotAPI:
                         data = match['metadata']
                         values = f"'{data['matchId']}','{data['dataVersion']}'"
                         info = match['info']
+
+                        #If match is not class ic type, return
+                        if info['gameMode'] != "CLASSIC":
+                              return
                         values = f"{values},{info['gameDuration']},'{info['gameId']}','{info['gameMode']}','{info['gameVersion']}',{info['mapId']},'{self.region_match}'"
                         values = f"({values})"
                         query = f"INSERT INTO game VALUES {values}"
@@ -820,7 +827,6 @@ class RiotAPI:
                                           player_rank = self.get_player_rank_id(id)
                                           self.insert_player_rank(connection,player_rank) 
 
-                        print("stop")
                         for participant in info['participants']:
                               self.insert_participant(connection,participant,data['matchId'])
                         
@@ -1532,10 +1538,12 @@ item = naServer.get_items()
 challenger = naServer.get_challenger()
 D1 = naServer.get_rank("DIAMOND","I")
 naServer.insert_all_rank(connection,D1)
+ naServer.insert_high_rank(connection,challenger)
+             naServer.insert_rank(connection,rank)
+             rank = naServer.get_player_rank_id('MMqutYPH_Xx7OCnDUXSo0aeHBaABkbKf7JkHK1cjoDGvf5o')
 """
-challenger = naServer.get_challenger()
 
-
+rank = naServer.get_player_rank_id('MMqutYPH_Xx7OCnDUXSo0aeHBaABkbKf7JkHK1cjoDGvf5o')
 try:
       with connect(
             host= my_host,
@@ -1544,22 +1552,15 @@ try:
             database = my_database,
       ) as connection:
             print(f"Connection {connection}")
-            """
-            naServer.insert_champions(connection,champ)
-            naServer.insert_items(connection,item)
-            naServer.insert_rank_history_sql(connection,"CHALLENGER","I",0,10)
-            """
-            naServer.insert_high_rank(connection,challenger)
-            naServer.insert_rank_history_sql(connection,"CHALLENGER","I",0,10)
-            
-            
+            naServer.insert_rank_history_sql(connection,"CHALLENGER","I")
+           
+
+           
 except mysql.connector.Error as e:
         if e.errno == errorcode.ER_ACCESS_DENIED_ERROR:
             print("Either your user name or password is incorrect")
         elif e.errno == errorcode.ER_BAD_DB_ERROR:
             print("Database does not exist")
-            naServer.insert_rank_history_sql(connection,"CHALLENGER","I")
-            sql_csv(connection,que,"challenger")
-
+           
         else:
             print(e)

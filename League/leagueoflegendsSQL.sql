@@ -30,7 +30,6 @@ CREATE TABLE IF NOT EXISTS type(
     PRIMARY KEY (champion_id,tags)
 );
 
-select * from champion;
 ALTER TABLE type
 ADD FOREIGN KEY (champion_id)
 REFERENCES champion(champion_id) ON DELETE CASCADE;
@@ -129,7 +128,7 @@ CREATE TABLE IF NOT EXISTS participant(
     item6 INT,
     kills INT,
     participant_id INT,
-    summoner_level INT,
+    sumoner_level INT,
     id VARCHAR(80),
     team_position VARCHAR(10),
     total_damage INT,
@@ -152,14 +151,94 @@ ADD COLUMN item4_name VARCHAR(35) AFTER item3_name,
 ADD COLUMN item5_name VARCHAR(35) AFTER item4_name,
 ADD COLUMN item6_name VARCHAR(35) AFTER item5_name;
 
-
-
-DROP procedure IF EXISTS `champion_winrate`;
 DELIMITER $$
-USE `leagueoflegends`$$
-CREATE PROCEDURE `champion_winrate` (IN champion_name VARCHAR(20))
+CREATE PROCEDURE GetChampionWinrate(IN champion_name VARCHAR(30), OUT winrate DECIMAL(4,2))
 BEGIN
-SELECT COUNT(part.win) FROM participant as part WHERE part.win = 1 AND part.champion_name = champion_name;
-END$$
+	DECLARE wins, games INT DEFAULT 0;
+	SELECT count(*)
+    INTO wins
+    FROM participant AS P
+    WHERE P.champion_name = champion_name AND P.win = 1 AND P.id = playerid;
+    
+    SELECT count(*)
+    INTO games
+    FROM participant AS P
+    WHERE P.champion_name = champion_name AND P.id = playerid;
+    
+    SELECT (wins/games);
+END $$
+
 DELIMITER ;
-                        
+
+DELIMITER $$
+CREATE PROCEDURE GetChampionPlayrate(IN champion_name VARCHAR(30), OUT playrate DECIMAL(4,2))
+BEGIN
+	DECLARE played, games INT DEFAULT 0;
+	SELECT count(*)
+    INTO played
+    FROM participant AS P
+    WHERE P.champion_name = champion_name;
+    
+    SELECT count(DISTINCT match_id )
+    INTO games
+    FROM participant;
+    
+    SELECT (played/games);
+END $$
+
+DELIMITER ;
+
+CALL GetChampionPlayrate("Leesin",@playrate);
+
+DELIMITER $$
+CREATE PROCEDURE GetChampionPlayerWinrate(IN champion_name VARCHAR(30), IN player_name VARCHAR(30), OUT winrate DECIMAL(4,2))
+BEGIN
+	DECLARE wins, games INT DEFAULT 0;
+    DECLARE playerid VARCHAR(90) DEFAULT "";
+    
+    SELECT player.id
+    INTO playerid
+    FROM player 
+    WHERE player.name = player_name;
+    
+	SELECT count(*)
+    INTO wins
+    FROM participant AS P
+    WHERE P.champion_name = champion_name AND P.win = 1 AND P.id = playerid;
+    
+    SELECT count(*)
+    INTO games
+    FROM participant AS P
+    WHERE P.champion_name = champion_name AND P.id = playerid;
+    
+    SELECT (wins/games);
+END $$
+
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE GetChampionRankWinrate(IN champion_name VARCHAR(30), IN tier VARCHAR(15), IN division VARCHAR(3), OUT winrate DECIMAL(4,2))
+BEGIN
+	DECLARE wins, games INT DEFAULT 0;
+
+	SELECT count(*)
+    INTO wins
+    FROM participant AS P
+    INNER JOIN ranked
+    ON P.id = ranked.id
+    WHERE P.champion_name = champion_name AND ranked.tier = tier AND ranked.division = division AND P.win = 1;
+    
+    SELECT count(*)
+    INTO games
+    FROM participant AS P
+    INNER JOIN ranked
+    ON P.id = ranked.id
+    WHERE P.champion_name = champion_name AND ranked.tier = tier AND ranked.division = division;
+    
+    SELECT (wins/games);
+END $$
+
+DELIMITER ;
+
+
+
