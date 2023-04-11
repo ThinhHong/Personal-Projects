@@ -4,7 +4,13 @@ import plotly.express as px
 import numpy as np
 from plotly.graph_objs import *
 
+# Reads csv file, can alter command  to read any csv file containing participant data and view using this python file
+# Unquote these lines to create your own dataframe an delete first df line
+'file = "YOURCSVFILE.csv"'
+'df = pd.read_csv(file)'
+
 df = pd.read_csv("all_participants.csv")
+
 df_champion = pd.read_csv("champions.csv")
 df_champion['times_played'] = 0
 df_champion['times_won'] = 0
