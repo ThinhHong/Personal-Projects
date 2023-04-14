@@ -152,26 +152,52 @@ ADD COLUMN item5_name VARCHAR(35) AFTER item4_name,
 ADD COLUMN item6_name VARCHAR(35) AFTER item5_name;
 
 DELIMITER $$
-CREATE PROCEDURE GetChampionWinrate(IN champion_name VARCHAR(30), OUT winrate DECIMAL(4,2))
+CREATE PROCEDURE getPlayerWinrate(IN player_name VARCHAR(30), OUT playrate DECIMAL(4,2))
+BEGIN
+	DECLARE played, games INT DEFAULT 0;
+    DECLARE player VARCHAR(80);
+    
+    SELECT player.id INTO player
+    FROM player
+    WHERE player.name = player_name;
+    
+	SELECT count(*)
+    INTO played
+    FROM participant As p
+    WHERE p.id = player AND p.win = 1;
+    
+    SELECT count(*)
+    INTO games
+    FROM participant AS p
+    WHERE p.id = player;
+    
+    SELECT (played/games);
+END $$
+DELIMITER ;
+
+SELECT * from player;
+DELIMITER $$
+CREATE PROCEDURE getChampionWinrate(IN champion_name VARCHAR(30), OUT winrate DECIMAL(4,2))
 BEGIN
 	DECLARE wins, games INT DEFAULT 0;
 	SELECT count(*)
     INTO wins
     FROM participant AS P
-    WHERE P.champion_name = champion_name AND P.win = 1 AND P.id = playerid;
+    WHERE P.champion_name = champion_name AND P.win = 1;
     
     SELECT count(*)
     INTO games
     FROM participant AS P
-    WHERE P.champion_name = champion_name AND P.id = playerid;
+    WHERE P.champion_name = champion_name;
     
     SELECT (wins/games);
 END $$
-
 DELIMITER ;
 
+DROP PROCEDURE getChampionWinrate;
+
 DELIMITER $$
-CREATE PROCEDURE GetChampionPlayrate(IN champion_name VARCHAR(30), OUT playrate DECIMAL(4,2))
+CREATE PROCEDURE getChampionPlayrate(IN champion_name VARCHAR(30), OUT playrate DECIMAL(4,2))
 BEGIN
 	DECLARE played, games INT DEFAULT 0;
 	SELECT count(*)
@@ -185,13 +211,12 @@ BEGIN
     
     SELECT (played/games);
 END $$
-
 DELIMITER ;
 
 CALL GetChampionPlayrate("Leesin",@playrate);
 
 DELIMITER $$
-CREATE PROCEDURE GetChampionPlayerWinrate(IN champion_name VARCHAR(30), IN player_name VARCHAR(30), OUT winrate DECIMAL(4,2))
+CREATE PROCEDURE getChampionPlayerWinrate(IN champion_name VARCHAR(30), IN player_name VARCHAR(30), OUT winrate DECIMAL(4,2))
 BEGIN
 	DECLARE wins, games INT DEFAULT 0;
     DECLARE playerid VARCHAR(90) DEFAULT "";
@@ -217,7 +242,7 @@ END $$
 DELIMITER ;
 
 DELIMITER $$
-CREATE PROCEDURE GetChampionRankWinrate(IN champion_name VARCHAR(30), IN tier VARCHAR(15), IN division VARCHAR(3), OUT winrate DECIMAL(4,2))
+CREATE PROCEDURE getChampionRankWinrate(IN champion_name VARCHAR(30), IN tier VARCHAR(15), IN division VARCHAR(3), OUT winrate DECIMAL(4,2))
 BEGIN
 	DECLARE wins, games INT DEFAULT 0;
 
@@ -237,8 +262,93 @@ BEGIN
     
     SELECT (wins/games);
 END $$
+DELIMITER ;
 
+DELIMITER $$
+CREATE PROCEDURE itemPurchaseRate(IN item_name VARCHAR(35), IN tier VARCHAR(15), IN division VARCHAR(3), OUT purchase_rate DECIMAL(4,2))
+BEGIN
+DECLARE wins,total INT DEFAULT 0;
+
+SELECT COUNT(p.win) INTO wins
+FROM participant AS p
+INNER JOIN ranked
+ON p.id = ranked.id
+WHERE (p.item0_name = item_name OR p.item1_name = item_name OR p.item2_name = item_name OR p.item3_name = item_name OR p.item4_name = item_name OR p.item5_name = item_name OR p.item6_name = item_name) AND p.win = 1 AND ranked.tier = tier AND ranked.division = division;
+
+SELECT COUNT(*) INTO total
+FROM participant AS p
+INNER JOIN ranked
+ON p.id = ranked.id;
+
+SELECT(wins/total);
+
+END $$
+DELIMITER ;
+
+
+CREATE PROCEDURE itemRankPurchaseRate
+                
+DELIMITER $$
+CREATE PROCEDURE item_win_rate(IN item_name VARCHAR(35), OUT purchase_rate DECIMAL(4,2))
+BEGIN
+DECLARE wins,total INT DEFAULT 0;
+
+SELECT COUNT(p.win) INTO wins
+FROM participant AS p
+WHERE (p.item0_name = item_name OR p.item1_name = item_name OR p.item2_name = item_name OR p.item3_name = item_name OR p.item4_name = item_name OR p.item5_name = item_name OR p.item6_name = item_name) AND p.win = 1;
+
+SELECT COUNT(p.win) INTO total
+FROM participant AS p
+WHERE (p.item0_name = item_name OR p.item1_name = item_name OR p.item2_name = item_name OR p.item3_name = item_name OR p.item4_name = item_name OR p.item5_name = item_name OR p.item6_name = item_name);
+
+SELECT(wins/total);
+
+END $$
 DELIMITER ;
 
 
 
+DELIMITER $$
+CREATE PROCEDURE top_champions(OUT champion VARCHAR(30), OUT total_win INT, OUT total_game_ INT, OUT win_rate DECIMAL(4,2))
+BEGIN
+
+	WITH wins AS(
+SELECT
+	p.champion_name, COUNT(p.champion_name) total_win
+    FROM participant AS p
+    WHERE p.win = 1
+    GROUP BY p.champion_name
+    ),
+total AS (
+    SELECT l.champion_name, total_win, COUNT(l.champion_name) total_game
+    FROM participant AS l
+    INNER JOIN wins AS w
+    ON w.champion_name = l.champion_name
+    GROUP BY w.champion_name)
+	SELECT champion_name, total.total_win, total_game, total_win/total_game AS win_rate FROM total
+    ORDER BY win_rate DESC
+    LIMIT 5;
+END$$
+DELIMITER ;
+CREATE PROCEDURE Topchampionwinrate(OUT champion_name VARCHAR(30), OUT winrate DECIMAL(4,2))
+BEGIN
+	DECLARE finished INT DEFAULT 0;
+	DECLARE champ VARCHAR(30) DEFAULT "";
+    DECLARE win DECIMAL(4,2) DEFAULT 0;
+    
+    DECLARE participant_cursor 
+		CURSOR FOR 
+			SELECT champion_name, win FROM participant;
+    
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET finished = 1;
+    
+    OPEN paricipant_cursor;
+    
+    get_participant: LOOP
+			FETCH participant_cursor INTO champ,win;
+            IF finished = 1 THEN
+				LEAVE get_participant;
+			END IF;
+            SET win = win + 1
+	FETCH participant_cursor INTO champ,win;
+    CLOSE participant_cursor;

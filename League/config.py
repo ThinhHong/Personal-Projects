@@ -6,9 +6,9 @@ config = configparser.ConfigParser()
 #Sets the config dictionary
 config["userID"] = {
     "startDate" : datetime.today().strftime('%Y-%m-%d'),
-    "host" : "localhost",
+    "host" : "YOURHOST",
     "username" : "YOURUSERNAME",
-    "password" : "YOURPASSWORD",
+    "password" : "YOURPASsWORD",
     "database" : "YOURDATABASE",
     "apiKey" : "YOURAPIKEY",
     "intialSummoner" : "https://{regionPlayer}.api.riotgames.com/lol/summoner/v4/summoners/",
