@@ -213,8 +213,6 @@ BEGIN
 END $$
 DELIMITER ;
 
-CALL GetChampionPlayrate("Leesin",@playrate);
-
 DELIMITER $$
 CREATE PROCEDURE getChampionPlayerWinrate(IN champion_name VARCHAR(30), IN player_name VARCHAR(30), OUT winrate DECIMAL(4,2))
 BEGIN
@@ -265,28 +263,22 @@ END $$
 DELIMITER ;
 
 DELIMITER $$
-CREATE PROCEDURE itemPurchaseRate(IN item_name VARCHAR(35), IN tier VARCHAR(15), IN division VARCHAR(3), OUT purchase_rate DECIMAL(4,2))
+CREATE PROCEDURE itemPurchaseRate(IN item_name VARCHAR(35), OUT purchase_rate DECIMAL(4,2))
 BEGIN
-DECLARE wins,total INT DEFAULT 0;
+DECLARE bought,total INT DEFAULT 0;
 
-SELECT COUNT(p.win) INTO wins
+SELECT COUNT(p.win) INTO bought
 FROM participant AS p
-INNER JOIN ranked
-ON p.id = ranked.id
-WHERE (p.item0_name = item_name OR p.item1_name = item_name OR p.item2_name = item_name OR p.item3_name = item_name OR p.item4_name = item_name OR p.item5_name = item_name OR p.item6_name = item_name) AND p.win = 1 AND ranked.tier = tier AND ranked.division = division;
+WHERE (p.item0_name = item_name OR p.item1_name = item_name OR p.item2_name = item_name OR p.item3_name = item_name OR p.item4_name = item_name OR p.item5_name = item_name OR p.item6_name = item_name);
 
-SELECT COUNT(*) INTO total
-FROM participant AS p
-INNER JOIN ranked
-ON p.id = ranked.id;
+SELECT COUNT(DISTINCT match_id) INTO total
+FROM participant AS p;
 
-SELECT(wins/total);
+SELECT(bought/total);
 
 END $$
 DELIMITER ;
 
-
-CREATE PROCEDURE itemRankPurchaseRate
                 
 DELIMITER $$
 CREATE PROCEDURE item_win_rate(IN item_name VARCHAR(35), OUT purchase_rate DECIMAL(4,2))
@@ -307,8 +299,8 @@ END $$
 DELIMITER ;
 
 
-
 DELIMITER $$
+
 CREATE PROCEDURE top_champions(OUT champion VARCHAR(30), OUT total_win INT, OUT total_game_ INT, OUT win_rate DECIMAL(4,2))
 BEGIN
 
@@ -330,25 +322,44 @@ total AS (
     LIMIT 5;
 END$$
 DELIMITER ;
-CREATE PROCEDURE Topchampionwinrate(OUT champion_name VARCHAR(30), OUT winrate DECIMAL(4,2))
+
+SELECT * FROM items;
+DELIMITER $$
+CREATE PROCEDURE topItems (IN item VARCHAR(35))
 BEGIN
-	DECLARE finished INT DEFAULT 0;
-	DECLARE champ VARCHAR(30) DEFAULT "";
-    DECLARE win DECIMAL(4,2) DEFAULT 0;
-    
-    DECLARE participant_cursor 
+	DECLARE finished INTEGER DEFAULT 0;
+	DECLARE emailAddress varchar(100) DEFAULT "";
+	DECLARE item0,item1, item2, item3, item4, item5, item6 VARCHAR(35);
+    DECLARE item_name VARCHAR(35);
+	-- declare cursor for employee email
+	DEClARE item_bought
 		CURSOR FOR 
-			SELECT champion_name, win FROM participant;
-    
-    DECLARE CONTINUE HANDLER FOR NOT FOUND SET finished = 1;
-    
-    OPEN paricipant_cursor;
-    
-    get_participant: LOOP
-			FETCH participant_cursor INTO champ,win;
-            IF finished = 1 THEN
-				LEAVE get_participant;
-			END IF;
-            SET win = win + 1
-	FETCH participant_cursor INTO champ,win;
-    CLOSE participant_cursor;
+			SELECT item0_name, item1_name, item2_name, item3_name, item4_name, item5_name, item6_name FROM participant;
+
+	-- declare NOT FOUND handler
+	DECLARE CONTINUE HANDLER 
+        FOR NOT FOUND SET finished = 1;
+
+	OPEN item_bought;
+	getItems: LOOP
+		FETCH item_bought INTO item0,item1, item2, item3, item4, item5, item6;
+		IF finished = 1 THEN 
+			LEAVE getItems;
+		END IF;
+		-- build email list
+		SET emailList = CONCAT(emailAddress,";",emailList);
+
+	END LOOP get_bought;
+	CLOSE curEmail;
+
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE da ()
+BEGIN
+	SELECT * FROM participant;
+END$$
+
+DELIMITER ;
+CALL da();

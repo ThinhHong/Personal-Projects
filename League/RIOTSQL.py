@@ -401,7 +401,7 @@ def get_winrate_champion_item(connection: connect, champion: str, item: str) -> 
                 """
                 times_played =  f"""
                 SELECT COUNT(p.win)
-                FROM participant AS p
+                FROM participant AS p                          
                 WHERE p.champion_name = '{champion}'
                 """
                 cursor.execute(wins)
