@@ -29,11 +29,16 @@ my_database = config['user_database']['database']
 class Encryption:
     
     def __init__(self) -> None:
+        #constructor
         pass
     
     @staticmethod
     def reverse_encrypt(string: str) -> str:
-
+        """
+    Reverses the order of characters in a given string.
+    Parameters: string (str): The string to be reversed.
+    Returns: str: The reversed string.
+    """
         encrypt = ""
         for i in range(len(string) -1, -1,-1):
             char = string[i]
@@ -42,6 +47,11 @@ class Encryption:
         return encrypt
 
     def encrypt(string: str, foward: int) -> str:
+        """
+    Pushes foward all characters in a given string.
+    Parameters: string (str): The string to be pushes.
+    Returns: str: The reversed string.
+    """
         encrypted = ""
         for i in range(len(string)):
             char = string[i]
