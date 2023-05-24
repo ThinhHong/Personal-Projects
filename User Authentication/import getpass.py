@@ -141,19 +141,29 @@ class Encryption:
 
         return xor
 
-    def add_user(connection,encryption_type,length) -> None:
+    def add_user(connection: connect,encryption_type :str, length, rollback_on_error: bool=False) -> None:
         username = input("Enter Your Username : ")
         #maskpass allows for input from user privately
-        print("") 
-        pwd = maskpass.askpass()
-        print("Confirm password") 
-        pwd2 = maskpass.askpass()
-        while pwd != pwd2:
-            print("Passwords do not match")
-            pwd = maskpass.askpass()
-            print("Confirm password") 
-            pwd2 = maskpass.askpass()
+
+        pwd = input("Enter Your Password: ")
+        pwd2 = input("Confirm Password : ")
+        while pwd != pwd2: 
+            pwd = input("Enter Your Password: ")
+            pwd2 = input("Confirm Password : ")
         encrypt = encryption_type(pwd,length)
+        try:
+            with connection.cursor() as cursor:
+                query = f"INSERT INTO user VALUES ({username},{pwd})"
+                print(query)
+                cursor.execute(query)
+                connection.commit()
+                print("User has been succesful added")
+                      
+        except Error as e:
+                print(f"Error has occured: {e}")
+                if rollback_on_error:
+                    connection.rollback()      
+                raise
 
 b = "00001"
 c = "00010"
