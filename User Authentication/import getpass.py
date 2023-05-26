@@ -204,8 +204,7 @@ def xor_binary(byte1: str, byte2: str) -> str:
 def xor_encryption(password: str,key: int) -> str:
     uni_list = [ord(ch) for ch in password]
     xor_list = [key ^ uni for uni in uni_list]
-    xor_length = (password.bit_count()+7) // 8
-    chr_list = [xor.to_bytes(xor_length, byteorder='big').decode for xor in xor_list]
+    chr_list = [xor.to_bytes(((xor.bit_count()+7) // 8), byteorder='big').decode() for xor in xor_list]
     return ''.join(chr_list)
     
 print(xor_encryption("Hello wrold!",7))
