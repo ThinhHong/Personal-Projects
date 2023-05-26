@@ -66,6 +66,11 @@ class Encryption:
         return encrypted
 
     def hack(string :str) -> None:
+        """
+    Pushes foward all characters in a given string from 1-26. Prints out every possible decrypted message
+    Parameters: string (str): The string to be decrypted.
+    Returns: None.
+    """
         for i in range(26):
             result = ""
             for j in range(len(string)):
@@ -177,10 +182,33 @@ class Encryption:
 
 b = "00001"
 c = "00010"
-d = zip(b,c)
-f = 'de'
-g = ['a','b','c']
-print(f.join(g))
+ 
+d = 12
+e = 21
+def xor_ord(int1: int, int2: int) -> str:
+
+        xor = int1 ^ int2
+        xor_length = (xor.bit_count()+7) // 8
+        return xor.to_bytes(xor_length, byteorder='big').decode()
+    
+def xor_binary(byte1: str, byte2: str) -> str:
+
+    xor = zip(byte1,byte2)
+    xor_str = ''
+    for int1, int2 in xor:
+        xor_str += str(int(int1) ^ int(int2))
+
+    new_char = chr(int(xor_str,2)%26)
+    return new_char
+
+def xor_encryption(password: str,key: int) -> str:
+    uni_list = [ord(ch) for ch in password]
+    xor_list = [key ^ uni for uni in uni_list]
+    xor_length = (password.bit_count()+7) // 8
+    chr_list = [xor.to_bytes(xor_length, byteorder='big').decode for xor in xor_list]
+    return ''.join(chr_list)
+    
+print(xor_encryption("Hello wrold!",7))
 
 try:
       with connect(
