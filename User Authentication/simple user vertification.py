@@ -86,6 +86,14 @@ def hack(string :str) -> None:
         print(f"Encryption key: {i} decrypted result: {result}")
                 
            
+def reverse_encypt(string: str) -> str:
+    encrypt = ""
+    for i in range(len(string) -1, -1,-1):
+        char = string[i]
+        encrypt += char
+
+    return char
+
 def transposition_encryption(string: str, length: int) -> str:
     number_rows = math.ceil(len(string)/length)
     list = []
@@ -102,6 +110,8 @@ def transposition_encryption(string: str, length: int) -> str:
     for i in range(0,length):
         row.append(string[i])
     b.append[row]
+
+
 # Accept user password input
 pwd = maskpass.askpass()
  
@@ -118,6 +128,25 @@ password = str(input("input password: ")).encode('utf-8')
 hashed = bcrypt.hashpw(password, bcrypt.gensalt(10)) 
 
 check = str(input("check password: ")).encode('utf-8')
+
+def transpostion_hack_2(string: str):
+    max = math.ceil(len(string)/2)
+    number_columns = 3
+    number_rows = math.ceil(len(string)/number_columns)
+    decrypted = "" 
+    list = []
+    for i in range(0, len(string),number_columns-1):
+       list.append(string[i:i+number_columns-1])
+
+    print(list)
+    for i in range(number_columns):
+        for value in list:
+            if i >= len(value):
+                break
+            decrypted += value[i]
+
+    return decrypted
+
 
 if bcrypt.checkpw(check, hashed):
     print("Login is successful")

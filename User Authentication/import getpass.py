@@ -83,8 +83,28 @@ class Encryption:
                     uni = ord(char) + i -65
                     new = chr((uni) % 26 + 65)
                     result += new
-
+ 
             print(f"Encryption key: {i} decrypted result: {result}")
+
+    def multiplicative_encrypt(string: str, foward: int) -> str:
+        """
+    Pushes foward all characters in a given string by a multiplicative .
+    Parameters: string (str): The string to be pushes.
+    Returns: str: The reversed string.
+    """
+        encrypted = ""
+        for i in range(len(string)):
+            char = string[i]
+            if (char.islower()):
+                uni = ord(char) * foward - 97
+                new = chr((uni % 26) + 97)
+                encrypted += new
+            else:
+                uni = ord(char) * foward -65
+                new = chr((uni % 26) + 65)
+                encrypted += new
+        return encrypted
+
 
     def transposition_encryption(string: str, length: int) -> list:
         list = []
@@ -202,6 +222,11 @@ def xor_binary(byte1: str, byte2: str) -> str:
     return new_char
 
 def xor_encryption(password: str,key: int) -> str:
+    """
+    Xor every charecter in a password by a key from 0-126
+    Parameters: string (str): The string to be encrypted
+    Returns: A string representing the encrypted password
+    """
     uni_list = [ord(ch) for ch in password]
     xor_list = [key ^ uni for uni in uni_list]
     chr_list = [xor.to_bytes(((xor.bit_count()+7) // 8), byteorder='big').decode() for xor in xor_list]
