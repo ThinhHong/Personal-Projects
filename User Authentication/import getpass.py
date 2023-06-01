@@ -176,6 +176,9 @@ class Encryption:
 
         return xor
 
+    def add_salt(password: str) -> str:
+        return password + "ssaafdh"
+
     def add_user(connection: connect,encryption_type :str, length, rollback_on_error: bool=False) -> None:
         username = input("Enter Your Username : ")
         #maskpass allows for input from user privately
