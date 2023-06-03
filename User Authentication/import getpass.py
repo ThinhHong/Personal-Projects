@@ -191,7 +191,7 @@ class Encryption:
         encrypt = encryption_type(pwd,length)
         try:
             with connection.cursor() as cursor:
-                query = f"INSERT INTO user VALUES ({username},{pwd})"
+                query = f"INSERT INTO user VALUES ({username},{encrypt})"
                 print(query)
                 cursor.execute(query)
                 connection.commit()
