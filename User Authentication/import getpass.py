@@ -202,6 +202,29 @@ class Encryption:
                 if rollback_on_error:
                     connection.rollback()      
                 raise
+        
+    def verify_user(connection: connect,encryption_type :str, length, rollback_on_error: bool=False) -> None:
+        
+        username = input("Enter Your Username : ")
+        pwd = input("Enter Your Password: ")
+        encrypt = encryption_type(pwd,length)
+        try:
+            with connection.cursor() as cursor:
+                query = f"SELECT * FROM user WHERE user.name = '{username}' AND user.password = '{encrypt}'"
+                print(query)
+                cursor.execute(query)
+                exist = cursor.fetchall()
+                if exist == 0:
+                    print("user does not exist")
+                    return
+                
+                print("user is verified")
+                      
+        except Error as e:
+                print(f"Error has occured: {e}")
+                if rollback_on_error:
+                    connection.rollback()      
+                raise
 
 b = "00001"
 c = "00010"
