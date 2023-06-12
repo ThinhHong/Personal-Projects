@@ -218,7 +218,7 @@ class Encryption:
                     print("user does not exist")
                     return
                 
-                print("user is verified")
+                print("User has logged in")
                       
         except Error as e:
                 print(f"Error has occured: {e}")
