@@ -226,9 +226,6 @@ class Encryption:
                     connection.rollback()      
                 raise
 
-b = "00001"
-c = "00010"
- 
 d = 12
 e = 21
 def xor_ord(int1: int, int2: int) -> str:
