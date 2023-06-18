@@ -216,6 +216,7 @@ class Encryption:
                 exist = cursor.fetchall()
                 if exist == 0:
                     print("user does not exist")
+                    print("check login information")
                     return
                 
                 print("User has logged in")
