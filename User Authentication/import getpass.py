@@ -217,7 +217,7 @@ class Encryption:
                 if exist == 0:
                     print("user does not exist")
                     print("check login information")
-                    return
+                    return 
                 
                 print("User has logged in")
                       
@@ -240,7 +240,7 @@ def xor_binary(byte1: str, byte2: str) -> str:
     for int1, int2 in xor:
         xor_str += str(int(int1) ^ int(int2))
 
-    new_char = chr(int(xor_str,2)%26)
+    new_char = chr(int(xor_str, 2) % 26)
     return new_char
 
 def xor_encryption(password: str,key: int) -> str:
