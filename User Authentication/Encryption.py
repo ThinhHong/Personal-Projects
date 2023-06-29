@@ -256,7 +256,7 @@ def xor_encryption(password: str,key: int) -> str:
     chr_list = [xor.to_bytes(((xor.bit_count()+7) // 8), byteorder='big').decode() for xor in xor_list]
     return ''.join(chr_list)
     
-print(xor_encryption("Hello wrold!",7))
+print(xor_encryption("Hello world!",7))
 
 def aes_encryption(password: str) -> str:
     
