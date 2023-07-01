@@ -267,7 +267,7 @@ try:
             password= my_password,
             database = my_database,
       ) as connection:
-            print(f"Connection {connection}")
+            print(f"Connection: {connection} ")
                  
 except mysql.connector.Error as e:
         if e.errno == errorcode.ER_ACCESS_DENIED_ERROR:
