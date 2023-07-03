@@ -259,6 +259,7 @@ def xor_encryption(password: str,key: int) -> str:
 print(xor_encryption("Hello world!",7))
 
 def aes_encryption(password: str) -> str:
+    return
     
 try:
       with connect(
