@@ -262,7 +262,7 @@ def xor_encryption(password: str,key: int) -> str:
     
 print(xor_encryption("Hello world!",7))
 
-def des_encryption(password: str) -> str:
+def aes_encryption(password: str) -> str:
     salt = get_random_bytes(32)
     key = PBKDF2(password, salt, dkLen=32)
     xor = b"secret message"
@@ -271,7 +271,7 @@ def des_encryption(password: str) -> str:
     return cipher_data
 
 
-def aes_encryption(password: str) -> str:
+def des_encryption(password: str) -> str:
     return
     
 
