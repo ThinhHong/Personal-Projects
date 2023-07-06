@@ -7,7 +7,11 @@ import configparser
 import pathlib
 import sys
 import math
-import from Cyrpto.Cipher import AES
+from crypto.Protocol.KDF import PBKDF2
+from crypto.Util.Padding import pad, unpad
+from crypto.Random import get_random_bytes
+from crypto.Cipher import DES
+from crypto.Cipher import AES
 
 from mysql.connector import connect, errorcode, Error
 
@@ -258,9 +262,19 @@ def xor_encryption(password: str,key: int) -> str:
     
 print(xor_encryption("Hello world!",7))
 
+def des_encryption(password: str) -> str:
+    salt = get_random_bytes(32)
+    key = PBKDF2(password, salt, dkLen=32)
+    xor = b"secret message"
+    cipher_code = AES.new(key, AES.MODE_CBC)
+    cipher_data = cipher_code.encrypt(pad(xor, AES.block_size))
+    return cipher_data
+
+
 def aes_encryption(password: str) -> str:
     return
     
+
 try:
       with connect(
             host= my_host,
