@@ -39,4 +39,5 @@ and the factors that influence stock prices.
 In summary, stock reports are essential because they provide investors and market participants with the information and analysis 
 needed to make informed investment decisions, assess risks, and understand the financial health and performance of publicly traded companies. 
 They are a cornerstone of transparency and accountability in the financial markets. This report aims to provide valuable insights on these comapies
-for informative decision making.
+for informative decision making. All graphs were created using microsoft tabel. Data was cleaned using a combination of filters, sorting and Vlookup.
+Pivot tables were used to group cateogrically data.
