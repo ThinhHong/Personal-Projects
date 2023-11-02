@@ -1,0 +1,141 @@
+*{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0
+    
+}
+
+body{
+    background-color: hsl(210, 46%, 95%);
+    font-family: 'Barlow Semi Condensed', sans-serif;
+}
+
+#testimony-container{
+    display: flex;
+    padding: 10% 3%;
+    flex-direction: column;
+    
+}
+/*#testimony1,#testimony2,#testimony3,#testimony4,#testimony5{
+
+}*/
+
+#left-main .grid{
+    margin-right: 20px;
+}
+
+.grid{
+    margin-bottom: 25px;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 1px 1px 5px 1px rgba(0,0,0,0.2);
+    font-size: 13px;
+
+}
+
+.user{
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    margin-bottom: 20px;
+}
+
+img{
+    border-collapse: separate;
+    perspective: 1px;
+    border-radius: 50%;
+    margin-right: 10px;
+    border: 1px solid #7541c8
+}
+
+.grid h4{
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+}
+#testimony1{
+    background-color: hsl(263, 55%, 52%);
+    position: relative;
+    z-index: 0;
+}
+
+#testimony2{
+    background-color: hsl(217, 19%, 35%);
+}
+
+#testimony3, #testimony5{
+    background-color: white;
+    color: hsl(219, 29%, 14%);
+}
+#testimony4{
+    background-color: hsl(219, 29%, 14%);
+}
+
+#testimony1, #testimony2, #testimony4{
+    color: white;
+}
+
+.verified{
+    opacity: 50%;
+}
+
+.opinion{
+    opacity: 70%;
+}
+
+#quote{
+    position: absolute;
+    right: 30px;
+    top: 0px;
+    border-radius: 0%;
+    z-index: 1;
+}
+
+.graduate{
+    z-index: 3;
+}
+
+@media (min-width: 576px) {
+    
+
+    #testimony-container{
+        display: flex;
+        flex-direction: row;
+        max-width: 1440px;
+        max-height: 800px;
+        margin: 0 auto;
+    }
+
+    #top-left-main, #bottom-right-main{
+        flex-basis: 50%;
+    }
+    #left-main{
+        flex-basis: 78%;
+        flex-direction: column;
+    }
+    #top-left-main{
+        display: flex;   
+    }
+    #testimony1{
+        flex-basis: 70%;
+    }
+    #testimony2{
+        flex-basis: 30%;
+    }
+    #bottom-left-main{
+        display: flex;
+        flex-direction: row;
+    }
+
+    #testimony3{
+        flex-basis: 30%;
+    }
+    #testimony4{
+        flex-basis: 70%;
+    }
+    #right-main{
+        flex-basis: 20%;
+        height: 100%;
+    }
+
+
+}
